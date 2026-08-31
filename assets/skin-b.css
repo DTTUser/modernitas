@@ -1,0 +1,49 @@
+/* Option B — Plain English. Quiet humanist sans. Closest to Aptos. */
+@import url("https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap");
+
+:root {
+  --font-display: "Public Sans", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Public Sans", "Segoe UI", system-ui, sans-serif;
+  --font-label: var(--font-body);
+
+  --display-weight: 600;
+  --display-tracking: -0.03em;
+  --label-tracking: 0.14em;
+  --label-transform: uppercase;
+
+  --paper: #FFFFFF;
+  --paper-raised: #FFFFFF;
+  --paper-sunken: #F5F7F9;
+  --ink: #1A2028;
+  --ink-soft: #38424D;
+  --ink-muted: #5C6773;
+  --ink-faint: #7A8794;
+  --rule: #E6EBEF;
+
+  --accent: #2F5D7C;
+  --accent-ink: #FFFFFF;
+  --accent-hover: #1F4257;
+
+  --inverse-bg: #2F5D7C;
+  --inverse-ink: #FFFFFF;
+  --inverse-muted: #C5D8E5;
+  --footer-bg: #FFFFFF;
+  --footer-ink: #7A8794;
+
+  --radius: 2px;
+  --radius-lg: 3px;
+  --shell: 1200px;
+  --gutter: 72px;
+  --band: 84px;
+  --nav-case: none;
+  --nav-size: 1rem;
+  --nav-tracking: 0;
+  --header-bg: var(--paper);
+  --header-ink: #4A5663;
+  --header-rule: var(--rule);
+  --card-bg: #FFFFFF;
+  --card-border: #E1E7EC;
+  --card-radius: var(--radius-lg);
+  --grid-gap: 24px;
+  --divider-style: cards;
+}

@@ -1,0 +1,49 @@
+/* Option C — Blueprint. Dark bands, hairline grid, monospace navigation. */
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap");
+
+:root {
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, sans-serif;
+  --font-label: "IBM Plex Mono", ui-monospace, monospace;
+
+  --display-weight: 600;
+  --display-tracking: -0.035em;
+  --label-tracking: 0.1em;
+  --label-transform: uppercase;
+
+  --paper: #F7F6F3;
+  --paper-raised: #FFFFFF;
+  --paper-sunken: #EDEBE6;
+  --ink: #1A1F1C;
+  --ink-soft: #333A35;
+  --ink-muted: #666E68;
+  --ink-faint: #7C857F;
+  --rule: #DDDCD6;
+
+  --accent: #3F7D6A;
+  --accent-ink: #F7F6F3;
+  --accent-hover: #2C5B4C;
+
+  --inverse-bg: #1E2622;
+  --inverse-ink: #EDEFEC;
+  --inverse-muted: #B9C2BC;
+  --footer-bg: #1E2622;
+  --footer-ink: #8A938D;
+
+  --radius: 0px;
+  --radius-lg: 0px;
+  --shell: 1200px;
+  --gutter: 60px;
+  --band: 72px;
+  --nav-case: uppercase;
+  --nav-size: 0.8125rem;
+  --nav-tracking: 0.04em;
+  --header-bg: #1E2622;
+  --header-ink: #A8B2AC;
+  --header-rule: transparent;
+  --card-bg: var(--paper-raised);
+  --card-border: var(--rule);
+  --card-radius: 0px;
+  --grid-gap: 1px;
+  --divider-style: grid;
+}

@@ -1,0 +1,35 @@
+{
+  "label": "Introduction to Modern IT",
+  "headline": "Understand what computers actually do before you decide what to do with them.",
+  "lede": "A ten-module course on the whole IT landscape, written by someone who has spent forty years in it. No coding. No jargon for its own sake. Just what the technology is, what it is good at, what it is bad at, and where it fits in a business.",
+  "quote": "Most people working around IT have never been told how the pieces fit together. That is not their fault. Nobody wrote it down for them.",
+  "quoteBy": "Dr Terry Critchley",
+  "audience": [
+    ["School and college leavers", "Deciding whether a career in IT is for you, and wanting to know what the work actually involves before committing three years to it."],
+    ["Career changers and returners", "Coming to IT from another field, or coming back after time away, and needing the grounding nobody ever gave you."],
+    ["Teachers and employers", "Teaching the subject, or hiring into it, and wanting one coherent account of the field rather than ten disconnected ones."]
+  ],
+  "modulesTitle": "Ten modules, one picture",
+  "modulesLede": "Each module stands on its own. Taken together they build the map of modern computing that most people are expected to already have.",
+  "modules": [
+    ["Enterprise computing", "Mainframes and high performance computing"],
+    ["Data centres", "Where the computing actually happens"],
+    ["Cloud", "What it is, and what it costs you"],
+    ["Databases", "How organisations hold what they know"],
+    ["Cybersecurity", "The threats, and the honest defences"],
+    ["Edge computing and IoT", "Computing that left the building"],
+    ["Artificial intelligence", "What it can do, and what it is sold as"],
+    ["Computer graphics", "From rendering to visualisation"],
+    ["Digital transformation", "The word, and what is under it"],
+    ["Legacy: an obituary", "What we left behind, and why it matters"]
+  ],
+  "authorTitle": "Dr Terry Critchley",
+  "authorLede": "Forty years in enterprise computing, and four books on it. The course exists because the same gap kept appearing: capable people, working in and around IT, who had never been given the whole picture.",
+  "authorNote": "[TERRY: two or three sentences of your own here.]",
+  "books": [
+    "Open Systems: The Reality",
+    "High Availability IT Services",
+    "High Performance IT Services",
+    "Making It in IT"
+  ]
+}

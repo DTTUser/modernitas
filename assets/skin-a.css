@@ -1,0 +1,49 @@
+/* Option A — Reading Room. Warm editorial. */
+@import url("https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Source+Sans+3:wght@400;600;700&display=swap");
+
+:root {
+  --font-display: Newsreader, Georgia, "Times New Roman", serif;
+  --font-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --font-label: var(--font-body);
+
+  --display-weight: 500;
+  --display-tracking: -0.02em;
+  --label-tracking: 0.12em;
+  --label-transform: uppercase;
+
+  --paper: #FBF6EE;
+  --paper-raised: #FFFDF9;
+  --paper-sunken: #F1E7D6;
+  --ink: #23201B;
+  --ink-soft: #4A443B;
+  --ink-muted: #6B6459;
+  --ink-faint: #8A7F6E;
+  --rule: #E4DACA;
+
+  --accent: #A85A2A;
+  --accent-ink: #FFFDF9;
+  --accent-hover: #7C3F1B;
+
+  --inverse-bg: #23201B;
+  --inverse-ink: #F6EFE3;
+  --inverse-muted: #C9BEAC;
+  --footer-bg: #1A1815;
+  --footer-ink: #8D8578;
+
+  --radius: 3px;
+  --radius-lg: 4px;
+  --shell: 1200px;
+  --gutter: 64px;
+  --band: 76px;
+  --nav-case: none;
+  --nav-size: 1rem;
+  --nav-tracking: 0;
+  --header-bg: var(--paper);
+  --header-ink: var(--ink-soft);
+  --header-rule: var(--rule);
+  --card-bg: var(--paper-raised);
+  --card-border: var(--rule);
+  --card-radius: var(--radius-lg);
+  --grid-gap: 44px;
+  --divider-style: rules;
+}
