@@ -20,6 +20,18 @@ const CONTENT = path.join(ROOT, 'content');
 const DIST = path.join(ROOT, 'dist');
 const SITE = 'https://modernitas.co.uk';
 
+
+/* portable recursive copy: mkdir + copyFile only, no permission copying,
+   which keeps it working on network and virtualised mounts */
+function copyDir(from, to) {
+  fs.mkdirSync(to, { recursive: true });
+  for (const e of fs.readdirSync(from, { withFileTypes: true })) {
+    const a = path.join(from, e.name), b = path.join(to, e.name);
+    if (e.isDirectory()) copyDir(a, b);
+    else fs.copyFileSync(a, b);
+  }
+}
+
 /* --------------------------------------------------------- front matter */
 function parse(raw) {
   const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
@@ -286,7 +298,7 @@ marked.setOptions({ mangle: false, headerIds: false });
 
 fs.rmSync(DIST, { recursive: true, force: true });
 fs.mkdirSync(DIST, { recursive: true });
-fs.cpSync(path.join(ROOT, 'assets'), path.join(DIST, 'assets'), { recursive: true });
+copyDir(path.join(ROOT, 'assets'), path.join(DIST, 'assets'));
 
 let built = 0, empty = 0;
 
