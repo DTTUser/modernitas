@@ -1,0 +1,32 @@
+{
+  "_note": "Terry sent three titles with ISBNs on 31 August 2026. Years and blurbs are deliberately blank: he supplies those. Do not guess them. Covers drop into assets/covers/ and the filename goes in 'cover'.",
+  "books": [
+    {
+      "title": "Making It in IT",
+      "isbn": "978-1498782760",
+      "publisher": "CRC Press",
+      "year": "",
+      "blurb": "",
+      "cover": "",
+      "url": ""
+    },
+    {
+      "title": "High Performance IT Services",
+      "isbn": "978-1498769198",
+      "publisher": "CRC Press",
+      "year": "",
+      "blurb": "",
+      "cover": "",
+      "url": ""
+    },
+    {
+      "title": "High Availability IT Services",
+      "isbn": "978-1482255904",
+      "publisher": "CRC Press",
+      "year": "",
+      "blurb": "",
+      "cover": "",
+      "url": ""
+    }
+  ]
+}

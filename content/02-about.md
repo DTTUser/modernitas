@@ -4,5 +4,5 @@ slug: about
 nav: About
 order: 2
 intent: Make the rest of the site credible.
-lede: Forty years in enterprise computing, and four books on it.
+lede: Five decades in enterprise computing, and three books on it.
 ---

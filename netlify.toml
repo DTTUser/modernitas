@@ -1,18 +1,16 @@
+# modernitas.co.uk
+#
+# Headers are NOT set here. They are written into dist/_headers by build.mjs,
+# because they have to change with the --live flag and a static file here
+# cannot. Two sources of truth for headers is how you end up serving a
+# noindex tag on a live site, or a year-long cache on a stylesheet.
+#
+# ON LAUNCH DAY: change the command below to "node build.mjs --live".
+# That single edit turns off noindex and turns on analytics.
+
 [build]
   command = "node build.mjs"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "22"
-
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    X-Frame-Options = "SAMEORIGIN"
-
-[[headers]]
-  for = "/assets/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"

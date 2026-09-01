@@ -1,0 +1,61 @@
+{
+  "_note": "PROVISIONAL. Scaffolded from Terry's Wix site on 1 September 2026 so the layout is real and he only has to confirm rather than start from nothing. Every entry needs his verdict.  kind: 'page' = we rebuild it as a page on this site.  'download' = it stays a PDF.  'link' = it was published on somebody else's site and stays an outbound link, because the publisher owns the posting.  Every Google Drive link on the Wix site was dead when checked on 1 September 2026, so 'href' is blank until Terry sends the actual files.",
+  "articles": [
+    {
+      "title": "Females in IT",
+      "kind": "page",
+      "href": "",
+      "source": "",
+      "blurb": "A 2018 survey of high school females aged 14 to 18, with free-form responses, and what came out of it."
+    },
+    {
+      "title": "What is digital transformation?",
+      "kind": "page",
+      "href": "",
+      "source": "",
+      "blurb": "Digital transformation means something different to almost everybody. An attempt to pin it down."
+    },
+    {
+      "title": "Dead Man Walking: the mainframe",
+      "kind": "page",
+      "href": "",
+      "source": "",
+      "blurb": "The mainframe's much-reported death, and the figures that say otherwise."
+    },
+    {
+      "title": "The resilience trinity",
+      "kind": "link",
+      "href": "https://www.apmdigest.com/resilience-the-modern-uptime-trinity",
+      "source": "Published on APMdigest",
+      "blurb": "Resilience is more than backups. The three areas, and why they have to be handled together."
+    },
+    {
+      "title": "Availability myths",
+      "kind": "page",
+      "href": "",
+      "source": "",
+      "blurb": "System availability, what MTTR actually means, and the sleight of hand behind some recovery claims."
+    },
+    {
+      "title": "Percentiles and response times",
+      "kind": "link",
+      "href": "",
+      "source": "Published elsewhere. Link to be confirmed.",
+      "blurb": "Why a good average response time can be worse than a bad one."
+    },
+    {
+      "title": "Skills in demand",
+      "kind": "page",
+      "href": "",
+      "source": "",
+      "blurb": "Which IT skills were in demand, why the answer changes every year, and what that tells you."
+    },
+    {
+      "title": "Planning for change",
+      "kind": "page",
+      "href": "",
+      "source": "",
+      "blurb": "Poor change management as one of the reasons IT projects fail."
+    }
+  ]
+}

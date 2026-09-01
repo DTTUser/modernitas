@@ -1,14 +1,21 @@
 /* ---------------------------------------------------------------------------
    modernitas.co.uk — build
 
-   Reads content/*.md, writes dist/*.html.
+   Reads content/, writes dist/. No framework. One dependency (marked).
+
+       node build.mjs              staging build: noindex, no analytics
+       node build.mjs --demo       staging build with placeholder copy filled in
+       node build.mjs --live       the real thing: indexable, analytics on
+
+   THE --live FLAG IS THE LAUNCH SWITCH. Until it is used, every page carries
+   a noindex tag and robots.txt disallows everything, so the staging address on
+   netlify.app cannot end up in Google ahead of the real domain.
 
    Adding a page: drop a markdown file in content/ with front matter.
-   Filling a page: paste Terry's text under the front matter. That is the
-   whole workflow. A page with no body renders an honest "content pending"
-   state instead, so the site is navigable from day one.
-
-   Run:  node build.mjs
+   Filling a page: paste Terry's text under the front matter.
+   A page with no body renders an honest "waiting for its content" panel, so
+   the site is navigable from day one and the gaps are visible without anybody
+   having to chase.
 --------------------------------------------------------------------------- */
 
 import fs from 'node:fs';
@@ -20,16 +27,36 @@ const CONTENT = path.join(ROOT, 'content');
 const DIST = path.join(ROOT, 'dist');
 const SITE = 'https://modernitas.co.uk';
 
+const ARGS = new Set(process.argv.slice(2));
+const LIVE = ARGS.has('--live');
+const DEMO = ARGS.has('--demo');
+const NOINDEX = !LIVE;
 
-/* portable recursive copy: mkdir + copyFile only, no permission copying,
-   which keeps it working on network and virtualised mounts */
+/* Plausible: cookie-free analytics. Only emitted on a live build, so the
+   staging site never pollutes the numbers. Costs about GBP 90 a year and is
+   Terry's subscription, not ours. If he decides against it, delete this
+   constant and the site is unchanged. */
+const ANALYTICS_DOMAIN = 'modernitas.co.uk';
+
+/* --------------------------------------------------------------- helpers */
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+/* cpSync throws EACCES on the mounted folders this repo lives in, so copy
+   by hand. Slower, works everywhere. */
 function copyDir(from, to) {
   fs.mkdirSync(to, { recursive: true });
-  for (const e of fs.readdirSync(from, { withFileTypes: true })) {
-    const a = path.join(from, e.name), b = path.join(to, e.name);
-    if (e.isDirectory()) copyDir(a, b);
-    else fs.copyFileSync(a, b);
+  for (const entry of fs.readdirSync(from, { withFileTypes: true })) {
+    const src = path.join(from, entry.name);
+    const dst = path.join(to, entry.name);
+    if (entry.isDirectory()) copyDir(src, dst);
+    else fs.copyFileSync(src, dst);
   }
+}
+
+function readData(name) {
+  const file = path.join(CONTENT, name);
+  return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : null;
 }
 
 /* --------------------------------------------------------- front matter */
@@ -50,9 +77,6 @@ function parse(raw) {
   return { data, body: m[2].trim() };
 }
 
-const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
-  .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-
 /* ------------------------------------------------------------ load pages */
 const pages = fs.readdirSync(CONTENT)
   .filter((f) => f.endsWith('.md'))
@@ -63,6 +87,7 @@ const pages = fs.readdirSync(CONTENT)
       title: data.title || 'Untitled',
       nav: data.nav ?? data.title,
       order: data.order ?? 99,
+      layout: data.layout || 'document',
       intent: data.intent || '',
       lede: data.lede || '',
       cta: data.cta !== false,
@@ -77,8 +102,47 @@ const navPages = pages.filter((p) => p.inNav);
 const href = (p) => (p.slug === 'home' ? '/' : `/${p.slug}/`);
 
 /* -------------------------------------------------------------- partials */
+function analytics() {
+  if (!LIVE) return '';
+  return `\n<script defer data-domain="${ANALYTICS_DOMAIN}" src="https://plausible.io/js/script.js"></script>`;
+}
+
+function structuredData(p) {
+  if (p.slug !== 'home') return '';
+  const data = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        '@id': `${SITE}/#website`,
+        url: SITE,
+        name: 'modernitas',
+        inLanguage: 'en-GB',
+      },
+      {
+        '@type': 'Person',
+        '@id': `${SITE}/#terry`,
+        name: 'Dr Terry Critchley',
+        jobTitle: 'IT author and course author',
+        url: SITE,
+      },
+      {
+        '@type': 'Course',
+        name: 'Introduction to Modern IT',
+        description:
+          'A ten-module course on the whole IT landscape, for people entering IT, changing career into it, or teaching it.',
+        provider: { '@id': `${SITE}/#terry` },
+        author: { '@id': `${SITE}/#terry` },
+        inLanguage: 'en-GB',
+        url: `${SITE}/the-course/`,
+      },
+    ],
+  };
+  return `\n<script type="application/ld+json">${JSON.stringify(data)}</script>`;
+}
+
 function head(p) {
-  const title = p.slug === 'home' ? 'modernitas' : `${p.title} — modernitas`;
+  const title = p.slug === 'home' ? 'modernitas — Introduction to Modern IT' : `${p.title} — modernitas`;
   const desc = p.lede || 'Introduction to Modern IT, a course by Dr Terry Critchley.';
   return `<!doctype html>
 <html lang="en-GB">
@@ -86,13 +150,22 @@ function head(p) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
-<meta name="description" content="${esc(desc)}">
+<meta name="description" content="${esc(desc)}">${NOINDEX ? '\n<meta name="robots" content="noindex, nofollow">' : ''}
 <link rel="canonical" href="${SITE}${href(p)}">
+<meta property="og:site_name" content="modernitas">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:type" content="website">
+<meta property="og:locale" content="en_GB">
 <meta property="og:url" content="${SITE}${href(p)}">
-<link rel="stylesheet" href="/assets/site.css">
+<meta property="og:image" content="${SITE}/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#2F5D7C">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preload" as="font" type="font/woff2" href="/assets/fonts/public-sans-latin-400-normal.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="/assets/fonts/public-sans-latin-600-normal.woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">${structuredData(p)}${analytics()}
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>`;
@@ -100,14 +173,18 @@ function head(p) {
 
 function masthead(current) {
   const links = navPages.filter((p) => p.slug !== 'home').map((p) =>
-    `<a href="${href(p)}"${p.slug === current ? ' aria-current="page"' : ''}>${esc(p.nav)}</a>`
-  ).join('\n        ');
+    `        <a href="${href(p)}"${p.slug === current ? ' aria-current="page"' : ''}>${esc(p.nav)}</a>`
+  ).join('\n');
   return `
 <header class="masthead">
   <div class="shell">
     <a class="wordmark" href="/">modernitas</a>
-    <nav class="nav" aria-label="Main">
-        ${links}
+    <button class="navtoggle" type="button" aria-expanded="false" aria-controls="nav" hidden>
+      <span class="navtoggle__bars" aria-hidden="true"></span>
+      <span class="visually-hidden">Menu</span>
+    </button>
+    <nav class="nav" id="nav" aria-label="Main">
+${links}
         <a class="btn btn--small" href="/contact/">Register interest</a>
     </nav>
   </div>
@@ -118,14 +195,17 @@ function footer() {
   return `
 <footer class="footer">
   <div class="shell">
-    <span>modernitas.co.uk</span>
-    <nav aria-label="Footer">
-      <a href="/privacy/">Privacy</a>
+    <p class="footer__mark">modernitas.co.uk</p>
+    <nav class="footer__nav" aria-label="Footer">
+      <a href="/">Home</a>
+      <a href="/the-course/">The course</a>
       <a href="/contact/">Contact</a>
-      <span>&copy; Terry Critchley ${new Date().getFullYear()}</span>
+      <a href="/privacy/">Privacy</a>
     </nav>
+    <p class="footer__legal">&copy; Dr Terry Critchley ${new Date().getFullYear()}. All rights reserved.</p>
   </div>
 </footer>
+<script src="/assets/site.js" defer></script>
 </body>
 </html>`;
 }
@@ -134,15 +214,22 @@ function ctaBand() {
   return `
 <section class="band band--inverse">
   <div class="shell">
-    <h2>The course is being finished now.</h2>
-    <p>Leave your email and you will hear when it is ready. Nothing else will be sent to you.</p>
-    <form class="signup" name="register" method="POST" data-netlify="true" netlify-honeypot="company" action="/thanks/">
-      <input type="hidden" name="form-name" value="register">
-      <p class="hp"><label>Do not fill this in <input name="company" tabindex="-1"></label></p>
-      <label class="visually-hidden" for="reg-email" hidden>Email address</label>
-      <input id="reg-email" type="email" name="email" placeholder="your@email.com" required aria-label="Email address">
-      <button class="btn" type="submit">Register</button>
-    </form>
+    <div class="signup__grid">
+      <div>
+        <h2>The course is being finished now</h2>
+        <p>Leave your email and you will hear when it is ready. Nothing else will be sent to you, and the list is not shared with anyone.</p>
+      </div>
+      <form class="signup" name="register" method="POST" data-netlify="true" netlify-honeypot="company" action="/thanks/">
+        <input type="hidden" name="form-name" value="register">
+        <p class="hp"><label>Do not fill this in <input name="company" tabindex="-1" autocomplete="off"></label></p>
+        <div class="signup__row">
+          <label class="visually-hidden" for="reg-email">Email address</label>
+          <input id="reg-email" type="email" name="email" placeholder="your@email.com" autocomplete="email" required>
+          <button class="btn btn--onDark" type="submit">Register</button>
+        </div>
+        <p class="signup__note">By registering you agree to the <a href="/privacy/">privacy notice</a>.</p>
+      </form>
+    </div>
   </div>
 </section>`;
 }
@@ -157,18 +244,41 @@ function pending(p) {
 </div>`;
 }
 
+/* Placeholder prose for --demo builds. Deliberately not lorem ipsum: it is in
+   English, and it says what it is on every paragraph, so there is no chance of
+   it being mistaken for copy or surviving to the live site unnoticed. */
+const FILLER = [
+  'PLACEHOLDER. This paragraph exists only to show how a block of body copy sits on the page at a realistic length. Terry’s words will replace it in full. Nothing here is a proposal, a summary or a suggestion.',
+  'PLACEHOLDER. A second paragraph, so the spacing between them can be judged. Line length is capped at about forty-two characters per em to keep it comfortable to read on a wide screen, which is why this column does not run the full width of the page.',
+  'PLACEHOLDER. A third and final paragraph. When the real text arrives it may be longer or shorter than this, and the layout will absorb either without anything needing to be redrawn.',
+];
+function filler(p) {
+  return `
+<div class="prose">
+  <p class="placeholder-flag">Placeholder text. This is a demonstration build.</p>
+  ${FILLER.map((t) => `<p>${esc(t)}</p>`).join('\n  ')}
+  <h2>A subheading, to show the spacing</h2>
+  ${FILLER.slice(0, 2).map((t) => `<p>${esc(t)}</p>`).join('\n  ')}
+  <ul>
+    <li>PLACEHOLDER list item, to show how bullets are set</li>
+    <li>PLACEHOLDER list item, second of three</li>
+    <li>PLACEHOLDER list item, third of three</li>
+  </ul>
+  ${FILLER.slice(2).map((t) => `<p>${esc(t)}</p>`).join('\n  ')}
+</div>
+<p class="placeholder-source">Real content goes in <code>${esc(p.source)}</code>.</p>`;
+}
+
 /* ------------------------------------------------- home page (composed) */
-const HOME = JSON.parse(fs.readFileSync(path.join(CONTENT, 'home.data.json'), 'utf8'));
+const HOME = readData('home.data.json');
 
 function homeMain() {
-  const trioClass = 'trio' + (getComputedDivider() === 'rules' ? ' trio--rules' : '');
   const audience = HOME.audience.map(([h, d]) =>
     `      <div class="card"><h3>${esc(h)}</h3><p>${esc(d)}</p></div>`).join('\n');
   const modules = HOME.modules.map(([t, d], i) =>
     `      <div class="item"><div class="item__n">${String(i + 1).padStart(2, '0')}</div>` +
     `<div><div class="item__t">${esc(t)}</div><div class="item__d">${esc(d)}</div></div></div>`).join('\n');
-  const books = HOME.books.map((b) =>
-    `      <li>${esc(b)}</li>`).join('\n');
+  const books = HOME.books.map((b) => `      <li>${esc(b)}</li>`).join('\n');
 
   return `
 <section class="hero">
@@ -194,7 +304,7 @@ function homeMain() {
 <section class="band band--raised">
   <div class="shell">
     <h2>Who it is for</h2>
-    <div class="${trioClass}">
+    <div class="trio">
 ${audience}
     </div>
   </div>
@@ -212,38 +322,57 @@ ${modules}
 
 <section class="band band--sunken">
   <div class="shell">
-    <h2>${esc(HOME.authorTitle)}</h2>
-    <p class="lede">${esc(HOME.authorLede)}</p>
-    <p>${esc(HOME.authorNote)}</p>
-    <ul>
+    <div class="author">
+      <div class="author__portrait">
+        <div class="imgslot" role="img" aria-label="Photograph of Dr Terry Critchley, to be supplied">
+          <span>Photograph<br>to come</span>
+        </div>
+      </div>
+      <div class="author__text">
+        <h2>${esc(HOME.authorTitle)}</h2>
+        <p class="lede">${esc(HOME.authorLede)}</p>
+        <p>${esc(HOME.authorNote)}</p>
+        <ul class="tight">
 ${books}
-    </ul>
+        </ul>
+        <p><a class="more" href="/about/">More about Terry</a></p>
+      </div>
+    </div>
   </div>
 </section>`;
-}
-
-// skin A separates the audience blocks with a rule rather than a card border
-function getComputedDivider() {
-  const tokens = fs.readFileSync(path.join(ROOT, 'assets', 'tokens.css'), 'utf8');
-  const m = tokens.match(/^\s*@import url\("skin-([abc])\.css"\);/m);
-  const skin = m ? m[1] : 'a';
-  return skin === 'a' ? 'rules' : 'cards';
 }
 
 /* ------------------------------------------------- tabbed interior page */
 function tabsMain(p) {
   const tabs = ['Overview', 'Modules', 'Who it is for', 'Resources'];
   const strip = tabs.map((t, i) =>
-    `      <button class="tab" role="tab" id="tab-${i}" aria-controls="panel-${i}" aria-selected="${i === 0}">${esc(t)}</button>`
+    `      <button class="tab" role="tab" id="tab-${i}" aria-controls="panel-${i}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}">${esc(t)}</button>`
   ).join('\n');
+  const modules = HOME.modules.map(([t, d], i) =>
+    `        <div class="item"><div class="item__n">${String(i + 1).padStart(2, '0')}</div>` +
+    `<div><div class="item__t">${esc(t)}</div><div class="item__d">${esc(d)}</div></div></div>`).join('\n');
+  const audience = HOME.audience.map(([h, d]) =>
+    `        <div class="card"><h3>${esc(h)}</h3><p>${esc(d)}</p></div>`).join('\n');
+
+  const bodies = [
+    p.body ? `<div class="prose">${marked.parse(p.body)}</div>` : (DEMO ? filler(p) : `<div class="prose"><p class="pending-note">[Overview text for the course page.]</p></div>`),
+    `<div class="items">\n${modules}\n      </div>`,
+    `<div class="trio">\n${audience}\n      </div>`,
+    `<div class="prose"><p class="pending-note">[Reading list, downloads and links. Waiting on Terry's page, download or drop verdict for each document.]</p></div>`,
+  ];
+
+  // No hidden attribute here on purpose. Without JavaScript every panel shows,
+  // stacked and headed, which is a perfectly good page. site.js hides all but
+  // the first on load, and the tab strip only appears once JS has run.
   const panels = tabs.map((t, i) =>
-    `    <div class="panel" role="tabpanel" id="panel-${i}" aria-labelledby="tab-${i}"${i ? ' hidden' : ''}>
-      <div class="prose"><h2>${esc(t)}</h2>${i === 0 && p.body ? marked.parse(p.body) : `<p class="pending-note">[Content for the ${esc(t)} tab.]</p>`}</div>
+    `    <div class="panel" role="tabpanel" id="panel-${i}" aria-labelledby="tab-${i}" tabindex="0">
+      <h2 class="panel__h">${esc(t)}</h2>
+      ${bodies[i]}
     </div>`
   ).join('\n');
 
   return `
-<div class="shell band">
+<div class="shell band band--tight">
   <h1>${esc(p.title)}</h1>
   ${p.lede ? `<p class="lede">${esc(p.lede)}</p>` : ''}
 </div>
@@ -252,44 +381,83 @@ function tabsMain(p) {
 ${strip}
   </div>
 ${panels}
-</div>
-<script>
-(() => {
-  for (const list of document.querySelectorAll('[role="tablist"]')) {
-    const tabs = [...list.querySelectorAll('[role="tab"]')];
-    const show = (i) => tabs.forEach((t, j) => {
-      t.setAttribute('aria-selected', String(i === j));
-      document.getElementById(t.getAttribute('aria-controls')).hidden = i !== j;
-    });
-    tabs.forEach((t, i) => {
-      t.addEventListener('click', () => show(i));
-      t.addEventListener('keydown', (e) => {
-        const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-        if (!d) return;
-        e.preventDefault();
-        const n = (i + d + tabs.length) % tabs.length;
-        tabs[n].focus(); show(n);
-      });
-    });
-  }
-})();
-</script>`;
+</div>`;
 }
 
 /* --------------------------------------------------------- contact page */
 function contactMain(p) {
+  const intro = p.body
+    ? marked.parse(p.body)
+    : '<p>[TERRY: two or three sentences here about what you are happy to be contacted about.]</p>';
   return `
 <div class="shell band">
   <h1>${esc(p.title)}</h1>
-  <div class="prose">${p.body ? marked.parse(p.body) : '<p>[TERRY: two or three sentences here about what you are happy to be contacted about.]</p>'}</div>
-  <form class="form" name="enquiry" method="POST" data-netlify="true" netlify-honeypot="company" action="/thanks/">
-    <input type="hidden" name="form-name" value="enquiry">
-    <p class="hp"><label>Do not fill this in <input name="company" tabindex="-1"></label></p>
-    <div class="field"><label for="c-name">Your name</label><input id="c-name" name="name" required></div>
-    <div class="field"><label for="c-email">Your email</label><input id="c-email" type="email" name="email" required></div>
-    <div class="field"><label for="c-msg">Your message</label><textarea id="c-msg" name="message" required></textarea></div>
-    <div><button class="btn" type="submit">Send</button></div>
-  </form>
+  <div class="contact__grid">
+    <div class="prose">${intro}</div>
+    <form class="form" name="enquiry" method="POST" data-netlify="true" netlify-honeypot="company" action="/thanks/">
+      <input type="hidden" name="form-name" value="enquiry">
+      <p class="hp"><label>Do not fill this in <input name="company" tabindex="-1" autocomplete="off"></label></p>
+      <div class="field"><label for="c-name">Your name</label><input id="c-name" name="name" autocomplete="name" required></div>
+      <div class="field"><label for="c-email">Your email</label><input id="c-email" type="email" name="email" autocomplete="email" required></div>
+      <div class="field"><label for="c-msg">Your message</label><textarea id="c-msg" name="message" rows="6" required></textarea></div>
+      <div><button class="btn" type="submit">Send</button></div>
+      <p class="signup__note">Your details go to Terry and nowhere else. See the <a href="/privacy/">privacy notice</a>.</p>
+    </form>
+  </div>
+</div>`;
+}
+
+/* ----------------------------------------------------------- books page */
+const BOOKS = readData('books.data.json') || { books: [] };
+
+function booksMain(p) {
+  const items = BOOKS.books.map((b) => `
+      <article class="book">
+        <div class="book__cover">
+          <div class="imgslot imgslot--cover" role="img" aria-label="Cover of ${esc(b.title)}, to be supplied"><span>Cover<br>to come</span></div>
+        </div>
+        <div class="book__text">
+          <h2>${esc(b.title)}</h2>
+          <p class="book__meta">${esc(b.publisher || '')}${b.year ? `, ${esc(b.year)}` : ''}${b.isbn ? ` &middot; ISBN ${esc(b.isbn)}` : ''}</p>
+          <p>${b.blurb ? esc(b.blurb) : '<span class="pending-note">[TERRY: a sentence or two on this one, and who it is for.]</span>'}</p>
+          ${b.url ? `<p><a class="more" href="${esc(b.url)}" rel="noopener">Where to buy it</a></p>` : ''}
+        </div>
+      </article>`).join('\n');
+
+  return `
+<div class="shell band">
+  <h1>${esc(p.title)}</h1>
+  ${p.lede ? `<p class="lede">${esc(p.lede)}</p>` : ''}
+  <div class="books">${items}</div>
+</div>`;
+}
+
+/* -------------------------------------------------------- articles page */
+const ARTICLES = readData('articles.data.json') || { articles: [] };
+
+function articlesMain(p) {
+  if (!ARTICLES.articles.length) {
+    return `<div class="shell band"><h1>${esc(p.title)}</h1>${p.lede ? `<p class="lede">${esc(p.lede)}</p>` : ''}${pending(p)}</div>`;
+  }
+  const items = ARTICLES.articles.map((a) => {
+    const kind = a.kind === 'link' ? 'Published elsewhere'
+      : a.kind === 'download' ? 'PDF download' : 'Article';
+    const target = a.kind === 'link' ? ' rel="noopener"' : '';
+    const href = a.href || '#';
+    return `
+      <li class="entry">
+        <p class="entry__kind">${esc(kind)}</p>
+        <h2 class="entry__title"><a href="${esc(href)}"${target}>${esc(a.title)}</a></h2>
+        <p class="entry__blurb">${esc(a.blurb || '')}</p>
+        ${a.source ? `<p class="entry__source">${esc(a.source)}</p>` : ''}
+      </li>`;
+  }).join('\n');
+
+  return `
+<div class="shell band">
+  <h1>${esc(p.title)}</h1>
+  ${p.lede ? `<p class="lede">${esc(p.lede)}</p>` : ''}
+  <ul class="entries">${items}</ul>
 </div>`;
 }
 
@@ -303,20 +471,23 @@ copyDir(path.join(ROOT, 'assets'), path.join(DIST, 'assets'));
 let built = 0, empty = 0;
 
 for (const p of pages) {
-  const isHome = p.slug === 'home';
   const hasBody = p.body.length > 0;
   if (!hasBody) empty++;
 
   let main;
-  if (isHome) main = homeMain();
-  else if (p.slug === 'the-course') main = tabsMain(p);
-  else if (p.slug === 'contact') main = contactMain(p);
-  else main = `<div class="shell band">
+  switch (p.layout) {
+    case 'home': main = homeMain(); break;
+    case 'tabs': main = tabsMain(p); break;
+    case 'contact': main = contactMain(p); break;
+    case 'books': main = booksMain(p); break;
+    case 'articles': main = articlesMain(p); break;
+    default:
+      main = `<div class="shell band">
   <h1>${esc(p.title)}</h1>
   ${p.lede ? `<p class="lede">${esc(p.lede)}</p>` : ''}
-  <div class="prose">${hasBody ? marked.parse(p.body) : ''}</div>
-  ${hasBody ? '' : pending(p)}
+  ${hasBody ? `<div class="prose">${marked.parse(p.body)}</div>` : (DEMO ? filler(p) : pending(p))}
 </div>`;
+  }
 
   const html = [
     head(p),
@@ -328,7 +499,7 @@ for (const p of pages) {
     footer(),
   ].join('\n');
 
-  const dir = isHome ? DIST : path.join(DIST, p.slug);
+  const dir = p.slug === 'home' ? DIST : path.join(DIST, p.slug);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'index.html'), html);
   built++;
@@ -336,8 +507,8 @@ for (const p of pages) {
 
 /* --------------------------------------------------------- extra pages */
 const extras = {
-  'thanks': ['Thank you', '<p>Your details are with Terry. He will be in touch.</p><p><a href="/">Back to the site</a></p>'],
-  '404': ['Page not found', '<p>That page does not exist, or has moved.</p><p><a href="/">Back to the site</a></p>'],
+  thanks: ['Thank you', '<p>Your details are with Terry. He will be in touch.</p><p><a class="more" href="/">Back to the site</a></p>'],
+  404: ['Page not found', '<p>That page does not exist, or it has moved.</p><p><a class="more" href="/">Back to the site</a></p>'],
 };
 for (const [slug, [title, body]] of Object.entries(extras)) {
   const p = { slug, title, lede: '', cta: false };
@@ -345,14 +516,51 @@ for (const [slug, [title, body]] of Object.entries(extras)) {
     `<div class="shell band"><h1>${esc(title)}</h1><div class="prose">${body}</div></div>`,
     '</main>', footer()].join('\n');
   if (slug === '404') fs.writeFileSync(path.join(DIST, '404.html'), html);
-  else { fs.mkdirSync(path.join(DIST, slug), { recursive: true }); fs.writeFileSync(path.join(DIST, slug, 'index.html'), html); }
+  else {
+    fs.mkdirSync(path.join(DIST, slug), { recursive: true });
+    fs.writeFileSync(path.join(DIST, slug, 'index.html'), html);
+  }
 }
 
-/* ----------------------------------------------------- robots & sitemap */
-fs.writeFileSync(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE}/sitemap.xml\n`);
+/* ------------------------------------------------ robots, sitemap, headers */
+fs.writeFileSync(path.join(DIST, 'robots.txt'), NOINDEX
+  ? 'User-agent: *\nDisallow: /\n'
+  : `User-agent: *\nAllow: /\nSitemap: ${SITE}/sitemap.xml\n`);
+
+const today = new Date().toISOString().slice(0, 10);
 fs.writeFileSync(path.join(DIST, 'sitemap.xml'),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-  pages.map((p) => `  <url><loc>${SITE}${href(p)}</loc></url>`).join('\n') +
+  pages.map((p) => `  <url><loc>${SITE}${href(p)}</loc><lastmod>${today}</lastmod></url>`).join('\n') +
   `\n</urlset>\n`);
 
-console.log(`built ${built} pages, ${empty} still waiting for content`);
+/* One source of truth for headers. netlify.toml deliberately does NOT set any,
+   because this file has to change with the --live flag and a static toml
+   cannot. Note the cache rules: the fonts never change so they are cached for
+   a year, but the stylesheet and the script must NOT be, or an update will
+   not reach anyone who has visited before. */
+fs.writeFileSync(path.join(DIST, '_headers'), `/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
+${NOINDEX ? '  X-Robots-Tag: noindex, nofollow, noarchive\n' : ''}
+/assets/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/*.css
+  Cache-Control: public, max-age=0, must-revalidate
+
+/assets/*.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/assets/*.png
+  Cache-Control: public, max-age=604800
+
+/assets/*.svg
+  Cache-Control: public, max-age=604800
+`);
+
+console.log(
+  `built ${built} pages, ${empty} still waiting for content` +
+  `  [${LIVE ? 'LIVE, indexable, analytics on' : 'staging, noindex, no analytics'}${DEMO ? ', placeholder copy filled' : ''}]`
+);

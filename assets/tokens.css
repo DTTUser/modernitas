@@ -1,4 +1,14 @@
-@import url("skin-a.css");
+/* ---------------------------------------------------------------------------
+   The skin switch. This is the only line that decides how the site looks.
 
-/* @import url("skin-b.css"); */
-/* @import url("skin-c.css"); */
+   Terry chose B on 1 September 2026.
+
+   To try another, comment this line out and uncomment one of the others.
+   Nothing else in the site refers to a colour, a typeface or a spacing value
+   directly. Everything reads a custom property defined in the skin file.
+--------------------------------------------------------------------------- */
+
+@import url("skin-b.css");
+
+/* @import url("skin-a.css"); */  /* Reading Room  — warm editorial */
+/* @import url("skin-c.css"); */  /* Blueprint     — dark bands, hairline grid */

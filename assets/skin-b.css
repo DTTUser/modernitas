@@ -1,5 +1,52 @@
-/* Option B — Plain English. Quiet humanist sans. Closest to Aptos. */
-@import url("https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap");
+/* ---------------------------------------------------------------------------
+   Option B — "Plain English".
+
+   Quiet humanist sans, white paper, slate blue. The closest of the three
+   to the Aptos look Terry asked for.
+
+   The typeface is Public Sans (Open Font Licence), served from this site.
+   It is NOT loaded from Google. Two reasons: it is faster, and a request to
+   Google's font CDN sends the visitor's IP address to Google, which would
+   drag a cookie-free site back into consent territory for no benefit.
+--------------------------------------------------------------------------- */
+
+@font-face {
+  font-family: "Public Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/public-sans-latin-400-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215;
+}
+@font-face {
+  font-family: "Public Sans";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/public-sans-latin-400-italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Public Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("fonts/public-sans-latin-500-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Public Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("fonts/public-sans-latin-600-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Public Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fonts/public-sans-latin-700-normal.woff2") format("woff2");
+}
 
 :root {
   --font-display: "Public Sans", "Segoe UI", system-ui, sans-serif;
@@ -16,8 +63,8 @@
   --paper-sunken: #F5F7F9;
   --ink: #1A2028;
   --ink-soft: #38424D;
-  --ink-muted: #5C6773;
-  --ink-faint: #7A8794;
+  --ink-muted: #55606C;
+  --ink-faint: #66727F;
   --rule: #E6EBEF;
 
   --accent: #2F5D7C;
@@ -26,9 +73,9 @@
 
   --inverse-bg: #2F5D7C;
   --inverse-ink: #FFFFFF;
-  --inverse-muted: #C5D8E5;
+  --inverse-muted: #DCE8F0;
   --footer-bg: #FFFFFF;
-  --footer-ink: #7A8794;
+  --footer-ink: #55606C;
 
   --radius: 2px;
   --radius-lg: 3px;
@@ -39,7 +86,7 @@
   --nav-size: 1rem;
   --nav-tracking: 0;
   --header-bg: var(--paper);
-  --header-ink: #4A5663;
+  --header-ink: #3E4A57;
   --header-rule: var(--rule);
   --card-bg: #FFFFFF;
   --card-border: #E1E7EC;
