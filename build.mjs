@@ -210,7 +210,9 @@ function footer() {
 </html>`;
 }
 
-function ctaBand() {
+function ctaBand(p) {
+  // The hidden "page" field costs nothing and tells Terry which page actually
+  // persuaded somebody to register. Without it every signup looks identical.
   return `
 <section class="band band--inverse">
   <div class="shell">
@@ -219,15 +221,16 @@ function ctaBand() {
         <h2>The course is being finished now</h2>
         <p>Leave your email and you will hear when it is ready. Nothing else will be sent to you, and the list is not shared with anyone.</p>
       </div>
-      <form class="signup" name="register" method="POST" data-netlify="true" netlify-honeypot="company" action="/thanks/">
+      <form class="signup" name="register" method="POST" data-netlify="true" netlify-honeypot="company" action="/registered/">
         <input type="hidden" name="form-name" value="register">
+        <input type="hidden" name="page" value="${esc(p && p.slug ? p.slug : 'unknown')}">
         <p class="hp"><label>Do not fill this in <input name="company" tabindex="-1" autocomplete="off"></label></p>
         <div class="signup__row">
           <label class="visually-hidden" for="reg-email">Email address</label>
           <input id="reg-email" type="email" name="email" placeholder="your@email.com" autocomplete="email" required>
           <button class="btn btn--onDark" type="submit">Register</button>
         </div>
-        <p class="signup__note">By registering you agree to the <a href="/privacy/">privacy notice</a>.</p>
+        <p class="signup__note">One message, when the course is ready. See the <a href="/privacy/">privacy notice</a>.</p>
       </form>
     </div>
   </div>
@@ -396,6 +399,7 @@ function contactMain(p) {
     <div class="prose">${intro}</div>
     <form class="form" name="enquiry" method="POST" data-netlify="true" netlify-honeypot="company" action="/thanks/">
       <input type="hidden" name="form-name" value="enquiry">
+      <input type="hidden" name="page" value="contact">
       <p class="hp"><label>Do not fill this in <input name="company" tabindex="-1" autocomplete="off"></label></p>
       <div class="field"><label for="c-name">Your name</label><input id="c-name" name="name" autocomplete="name" required></div>
       <div class="field"><label for="c-email">Your email</label><input id="c-email" type="email" name="email" autocomplete="email" required></div>
@@ -495,7 +499,7 @@ for (const p of pages) {
     `<main id="main">`,
     main,
     `</main>`,
-    p.cta ? ctaBand() : '',
+    p.cta ? ctaBand(p) : '',
     footer(),
   ].join('\n');
 
@@ -507,8 +511,18 @@ for (const p of pages) {
 
 /* --------------------------------------------------------- extra pages */
 const extras = {
-  thanks: ['Thank you', '<p>Your details are with Terry. He will be in touch.</p><p><a class="more" href="/">Back to the site</a></p>'],
-  404: ['Page not found', '<p>That page does not exist, or it has moved.</p><p><a class="more" href="/">Back to the site</a></p>'],
+  thanks: ['Message sent',
+    '<p>Your message is with Terry and he will come back to you.</p>' +
+    '<p>Nothing else will be done with your details. If you would rather they were deleted, ' +
+    'say so in a reply and they will be.</p>' +
+    '<p><a class="more" href="/">Back to the site</a></p>'],
+  registered: ['You are on the list',
+    '<p>You will get one message, when the course is ready. Nothing else.</p>' +
+    '<p>If you change your mind, reply to that message and you will come off the list.</p>' +
+    '<p><a class="more" href="/the-course/">See what is in the course</a></p>'],
+  404: ['Page not found',
+    '<p>That page does not exist, or it has moved.</p>' +
+    '<p><a class="more" href="/">Back to the site</a></p>'],
 };
 for (const [slug, [title, body]] of Object.entries(extras)) {
   const p = { slug, title, lede: '', cta: false };

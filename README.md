@@ -140,15 +140,52 @@ icon. Both are placeholders of my making and can be replaced.
 
 ## Forms
 
-Two, both Netlify Forms, both with a honeypot and no CAPTCHA.
+Two, both Netlify Forms, both with a honeypot and no CAPTCHA. Both are already
+registered on the Netlify project and both have been tested end to end.
 
-- `register` — the email band at the foot of most pages.
-- `enquiry` — name, email, message, on the contact page.
+| Form | Where | Fields | Confirmation |
+|---|---|---|---|
+| `register` | the email band at the foot of most pages | email, page | `/registered/` |
+| `enquiry` | the contact page | name, email, message, page | `/thanks/` |
 
-Both post to `/thanks/`. Set the notification address in the Netlify UI:
-Forms, then Settings, then Form notifications. Deliver to an address on
-modernitas.co.uk and forward to itmit2025@gmail.com, so the enquiry record
-stays with the domain rather than only with Terry's inbox.
+The hidden `page` field records which page the person was on when they
+submitted. It costs nothing and it is the only way to tell which page is
+actually doing the persuading. Without it every registration looks identical.
+
+The two confirmations say different things on purpose. Somebody who registered
+interest has been promised one message and needs telling how to get off the
+list. Somebody who sent an enquiry has not joined anything.
+
+### Still to set, and it needs Terry
+
+**Notification address.** Netlify UI: Forms, Settings, Form notifications.
+Point it at an address on modernitas.co.uk and forward from there to
+itmit2025@gmail.com, so the enquiry record stays with the domain rather than
+only with his inbox. That needs a mailbox or a forwarder at IONOS, which is
+his to create. Until then, point notifications at Michael so nothing is lost
+during the build.
+
+**Custom subject line**, on the same settings page. Worth doing: the default
+is easy to miss in a busy inbox.
+
+### What Netlify Forms is not
+
+It stores submissions and emails a notification. It cannot send anything to
+the list. So when the course launches and Terry wants to email everybody who
+registered, that is a separate job: export the CSV from Netlify and import it
+into a mailing tool that handles unsubscribes properly.
+
+There is no point setting that up now. The export takes five minutes on the
+day, and until there is a list worth mailing it is a subscription paying for
+nothing. But it should not be a surprise on launch day, because "just BCC
+them all from Gmail" is not a lawful way to run a marketing list and will get
+the domain's mail reputation damaged into the bargain.
+
+**Volume.** Netlify has moved to credit-based pricing and form submissions are
+metered. The current free allowance was not something I could pin down from
+their public pages, so check it in the account before launch. At the volumes
+this site will see it is very unlikely to matter. A spam flood is the case
+that would, which is what the honeypot is for.
 
 ---
 
