@@ -132,4 +132,38 @@
 
     show(0);
   });
+
+  /* --------------------------------------- deep links into the tab panels
+     The menu points at a single module or a single book. On the course page
+     that item lives inside a tab panel, which starts hidden, so the panel has
+     to be opened before the browser can scroll to it. The item is then marked
+     for a couple of seconds so it is obvious which one you asked for.
+
+     With scripting off none of this is needed: every panel is showing and the
+     anchor works on its own. */
+  function revealTarget() {
+    var id = (window.location.hash || '').slice(1);
+    if (!id) return;
+
+    var el = document.getElementById(id);
+    if (!el) return;
+
+    var panel = el.closest ? el.closest('[role="tabpanel"]') : null;
+    if (panel && panel.hidden) {
+      var tab = document.getElementById(panel.getAttribute('aria-labelledby'));
+      if (tab) tab.click();
+    }
+
+    try { el.scrollIntoView({ block: 'center' }); } catch (e) { el.scrollIntoView(); }
+
+    el.classList.add('is-target');
+    window.setTimeout(function () { el.classList.remove('is-target'); }, 2400);
+  }
+
+  window.addEventListener('hashchange', function () {
+    closeAll(null);
+    revealTarget();
+  });
+
+  revealTarget();
 })();

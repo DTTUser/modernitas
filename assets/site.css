@@ -485,3 +485,10 @@ body.notes-on .notes { display: block; }
     box-shadow: none; margin: 8px 0 2px;
   }
 }
+
+/* The item the menu sent you to, marked for a moment on arrival. */
+.is-target {
+  outline: 2px solid var(--accent);
+  outline-offset: 8px;
+  border-radius: var(--radius-lg);
+}

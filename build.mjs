@@ -171,6 +171,17 @@ function head(p) {
 <a class="skip" href="#main">Skip to content</a>`;
 }
 
+/* One anchor per module and per book, so the menu can point at the item
+   itself rather than at the page it happens to live on. */
+function anchorId(title) {
+  return 'book-' + String(title).toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
+}
+
+function moduleId(i) {
+  return 'm' + String(i + 1).padStart(2, '0');
+}
+
 function masthead(current) {
   /* The main menu doubles as the table of contents for the course, which is
      what Terry asked for on 8 September. It sits on its own strip under the
@@ -179,8 +190,10 @@ function masthead(current) {
      the drop-down buttons never appear and it stays a plain row of links, so
      nothing is lost: the same lists are on the home and course pages. */
   const MENUS = {
-    'the-course': ['Ten modules', HOME.modules.map(([t]) => t), '/the-course/'],
-    'books': ['Four books', HOME.books.slice(), '/books/'],
+    'the-course': ['Ten modules',
+      HOME.modules.map(([t], i) => [t, '/the-course/#' + moduleId(i)])],
+    'books': ['Four books',
+      BOOKS.books.map((b) => [b.title, '/books/#' + anchorId(b.title)])],
   };
 
   const groups = navPages.filter((p) => p.slug !== 'home').map((p) => {
@@ -188,9 +201,9 @@ function masthead(current) {
     const link = `<a class="nav__link" href="${href(p)}"${cur}>${esc(p.nav)}</a>`;
     const menu = MENUS[p.slug];
     if (!menu) return `        <div class="nav__group">${link}</div>`;
-    const [heading, items, dest] = menu;
-    const list = items.map((t, i) =>
-      `              <li><span class="nav__n">${String(i + 1).padStart(2, '0')}</span><a href="${dest}">${esc(t)}</a></li>`
+    const [heading, items] = menu;
+    const list = items.map(([t, to], i) =>
+      `              <li><span class="nav__n">${String(i + 1).padStart(2, '0')}</span><a href="${to}">${esc(t)}</a></li>`
     ).join('\n');
     return `        <div class="nav__group">
           ${link}
@@ -448,7 +461,7 @@ function tabsMain(p) {
     `      <button class="tab" role="tab" id="tab-${i}" aria-controls="panel-${i}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}">${esc(t)}</button>`
   ).join('\n');
   const modules = HOME.modules.map(([t, d], i) =>
-    `        <div class="item"><div class="item__n">${String(i + 1).padStart(2, '0')}</div>` +
+    `        <div class="item" id="${moduleId(i)}"><div class="item__n">${String(i + 1).padStart(2, '0')}</div>` +
     `<div><div class="item__t">${esc(t)}</div><div class="item__d">${esc(d)}</div></div></div>`).join('\n');
   const audience = HOME.audience.map(([h, d]) =>
     `        <div class="card"><h3>${esc(h)}</h3><p>${esc(d)}</p></div>`).join('\n');
@@ -512,7 +525,7 @@ const BOOKS = readData('books.data.json') || { books: [] };
 
 function booksMain(p) {
   const items = BOOKS.books.map((b) => `
-      <article class="book">
+      <article class="book" id="${anchorId(b.title)}">
         <div class="book__cover">
           <div class="imgslot imgslot--cover" role="img" aria-label="Cover of ${esc(b.title)}, to be supplied"><span>Cover<br>to come</span></div>
         </div>
