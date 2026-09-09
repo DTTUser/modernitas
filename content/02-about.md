@@ -8,21 +8,23 @@ lede: Five decades in enterprise computing, and four books on it.
 portrait: portrait-terry-critchley.png
 ---
 
-> **Placeholder text.** Written so the page has something in it and the layout is real. Every word is yours to change, and none of it is a proposal.
+> **Your copy, in from the file of 8 September.** The biography and the reason for the course are yours. The books paragraph is still mine.
 
 ## Five decades, and the same gap every time
 
-I have spent more than fifty years in information technology. Some of it as a generalist in the field, some as a specialist when a problem demanded it, and a good deal of it learning by getting things wrong, which is the only way anybody learns this subject properly.
+I have spent more than fifty years in information technology. Some of it as a generalist in the field, some as a specialist per se and when a problem demanded it, and a good deal of it learning by getting things wrong, which is the only way anybody learns this subject properly.
+
+I served time with IBM, Oracle, Sun Microsystems and Barclays Bank, in a wide variety of roles and industries; chemical, government, utilities, manufacturing, education. I even designed a programme to integrate text and images fifteen years before the internet came.
 
 What I kept meeting was not a shortage of clever people. It was capable people, working in and around IT, who had never been shown how the pieces fit together. Nobody had written it down for them. They knew their own corner well and had no map of the rest, which is fine until the job mutates underneath them, as IT jobs do.
 
 Along the way I learned that the things that decide whether a project succeeds are mostly not technical. Methods, best practice, and the critical success factors that separate a system that works from one that limps. People, process and technology, in that order, because process comes before the kit.
 
-*[TERRY: this is my rough. Replace it with your own account. Where you worked, what you built, what you would tell someone starting now.]*
+Another problem that became clear to me was that specialists could rarely venture outside their chosen field in discussion, however close and pertinent to their topic.
 
 ## Why the course exists
 
-Because the map does not exist anywhere else. There are hundreds of IT courses, and they either start from computer science or from the PC, and neither of those is the workplace. None of them cover the mainframe, enterprise computing or high performance computing, which between them carry most of the world's work.
+Because it is pragmatic, workplace oriented coverage, derived from experience and observed need, and such coverage does not exist anywhere else. There are hundreds of IT courses available, and they either start from computer science or from the PC, and neither of those fit the workplace needs. None of them cover the mainframe, enterprise computing or high performance computing, which between them carry much of the world's work.
 
 ## The books
 
