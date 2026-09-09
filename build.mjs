@@ -172,23 +172,118 @@ function head(p) {
 }
 
 function masthead(current) {
-  const links = navPages.filter((p) => p.slug !== 'home').map((p) =>
-    `        <a href="${href(p)}"${p.slug === current ? ' aria-current="page"' : ''}>${esc(p.nav)}</a>`
-  ).join('\n');
+  /* The main menu doubles as the table of contents for the course, which is
+     what Terry asked for on 8 September. It sits on its own strip under the
+     wordmark rather than as a row of small links, each item is a box, and the
+     two that have contents behind them carry a drop-down. Without JavaScript
+     the drop-down buttons never appear and it stays a plain row of links, so
+     nothing is lost: the same lists are on the home and course pages. */
+  const MENUS = {
+    'the-course': ['Ten modules', HOME.modules.map(([t]) => t), '/the-course/'],
+    'books': ['Four books', HOME.books.slice(), '/books/'],
+  };
+
+  const groups = navPages.filter((p) => p.slug !== 'home').map((p) => {
+    const cur = p.slug === current ? ' aria-current="page"' : '';
+    const link = `<a class="nav__link" href="${href(p)}"${cur}>${esc(p.nav)}</a>`;
+    const menu = MENUS[p.slug];
+    if (!menu) return `        <div class="nav__group">${link}</div>`;
+    const [heading, items, dest] = menu;
+    const list = items.map((t, i) =>
+      `              <li><span class="nav__n">${String(i + 1).padStart(2, '0')}</span><a href="${dest}">${esc(t)}</a></li>`
+    ).join('\n');
+    return `        <div class="nav__group">
+          ${link}
+          <button class="nav__more" type="button" aria-expanded="false" aria-controls="nm-${p.slug}" hidden>
+            <span class="visually-hidden">${esc(heading)}</span>
+            <span class="nav__caret" aria-hidden="true"></span>
+          </button>
+          <div class="nav__panel" id="nm-${p.slug}" hidden>
+            <p class="nav__panel__h">${esc(heading)}</p>
+            <ol class="nav__panel__list">
+${list}
+            </ol>
+          </div>
+        </div>`;
+  }).join('\n');
+
+  const notesBtn = LIVE ? ''
+    : '<button class="notesbtn" type="button" aria-pressed="false" aria-controls="notes">Show build notes</button>';
+
   return `
 <header class="masthead">
-  <div class="shell">
+  <div class="shell masthead__top">
     <a class="wordmark" href="/">modernitas</a>
-    <button class="navtoggle" type="button" aria-expanded="false" aria-controls="nav" hidden>
-      <span class="navtoggle__bars" aria-hidden="true"></span>
-      <span class="visually-hidden">Menu</span>
-    </button>
-    <nav class="nav" id="nav" aria-label="Main">
-${links}
-        <a class="btn btn--small" href="/contact/">Register interest</a>
-    </nav>
+    <div class="masthead__actions">
+      ${notesBtn}
+      <a class="btn btn--small" href="/contact/">Register interest</a>
+      <button class="navtoggle" type="button" aria-expanded="false" aria-controls="nav" hidden>
+        <span class="navtoggle__bars" aria-hidden="true"></span>
+        <span class="visually-hidden">Menu</span>
+      </button>
+    </div>
+  </div>
+  <div class="masthead__strip">
+    <div class="shell">
+      <nav class="nav" id="nav" aria-label="Main">
+${groups}
+      </nav>
+    </div>
   </div>
 </header>`;
+}
+
+/* --------------------------------------------------------- build notes
+   The decision blocks and placeholder flags are written in the same markdown
+   as the page copy. They are lifted out here and shown behind a switch, so
+   the page reads as the site rather than as the working document. They are
+   never rendered at all on a live build. */
+let NOTES = '';
+
+function proseBody(p) {
+  NOTES = '';
+  let html = marked.parse(p.body);
+
+  const at = html.search(/<h2[^>]*>\s*Decisions on this page/i);
+  if (at !== -1) {
+    let cut = at;
+    const hr = html.lastIndexOf('<hr>', at);
+    if (hr !== -1 && at - hr < 80) cut = hr;
+    NOTES = html.slice(cut);
+    html = html.slice(0, cut);
+  }
+
+  html = html.replace(/<blockquote>[\s\S]*?<\/blockquote>\s*/, (m) => {
+    if (!/Placeholder text/i.test(m)) return m;
+    NOTES = m + NOTES;
+    return '';
+  });
+
+  return html;
+}
+
+/* Once the notes are lifted out a page can have nothing left, and an empty
+   band leaves a white gap. These two return nothing at all in that case. */
+function proseHtml(p) {
+  return (p && p.body) ? proseBody(p).trim() : '';
+}
+
+function proseBand(p) {
+  const html = proseHtml(p);
+  return html
+    ? `<section class="band"><div class="shell"><div class="prose">${html}</div></div></section>`
+    : '';
+}
+
+function notesSection() {
+  if (LIVE || !NOTES.trim()) return '';
+  return `
+<section class="notes" id="notes" aria-label="Build notes">
+  <div class="shell">
+    <p class="notes__flag">Build notes. Not part of the finished site.</p>
+    <div class="prose">${NOTES}</div>
+  </div>
+</section>`;
 }
 
 function footer() {
@@ -275,7 +370,7 @@ function filler(p) {
 /* ------------------------------------------------- home page (composed) */
 const HOME = readData('home.data.json');
 
-function homeMain() {
+function homeMain(p) {
   const audience = HOME.audience.map(([h, d]) =>
     `      <div class="card"><h3>${esc(h)}</h3><p>${esc(d)}</p></div>`).join('\n');
   const modules = HOME.modules.map(([t, d], i) =>
@@ -342,7 +437,8 @@ ${books}
       </div>
     </div>
   </div>
-</section>`;
+</section>
+${proseBand(p)}`;
 }
 
 /* ------------------------------------------------- tabbed interior page */
@@ -358,7 +454,7 @@ function tabsMain(p) {
     `        <div class="card"><h3>${esc(h)}</h3><p>${esc(d)}</p></div>`).join('\n');
 
   const bodies = [
-    p.body ? `<div class="prose">${marked.parse(p.body)}</div>` : (DEMO ? filler(p) : `<div class="prose"><p class="pending-note">[Overview text for the course page.]</p></div>`),
+    proseHtml(p) ? `<div class="prose">${proseHtml(p)}</div>` : (DEMO ? filler(p) : `<div class="prose"><p class="pending-note">[Overview text for the course page.]</p></div>`),
     `<div class="items">\n${modules}\n      </div>`,
     `<div class="trio">\n${audience}\n      </div>`,
     `<div class="prose"><p class="pending-note">[Reading list, downloads and links. Waiting on Terry's page, download or drop verdict for each document.]</p></div>`,
@@ -390,7 +486,7 @@ ${panels}
 /* --------------------------------------------------------- contact page */
 function contactMain(p) {
   const intro = p.body
-    ? marked.parse(p.body)
+    ? proseBody(p)
     : '<p>[TERRY: two or three sentences here about what you are happy to be contacted about.]</p>';
   return `
 <div class="shell band">
@@ -432,6 +528,7 @@ function booksMain(p) {
 <div class="shell band">
   <h1>${esc(p.title)}</h1>
   ${p.lede ? `<p class="lede">${esc(p.lede)}</p>` : ''}
+  ${proseHtml(p) ? `<div class="prose">${proseHtml(p)}</div>` : ''}
   <div class="books">${items}</div>
 </div>`;
 }
@@ -461,6 +558,7 @@ function articlesMain(p) {
 <div class="shell band">
   <h1>${esc(p.title)}</h1>
   ${p.lede ? `<p class="lede">${esc(p.lede)}</p>` : ''}
+  ${proseHtml(p) ? `<div class="prose">${proseHtml(p)}</div>` : ''}
   <ul class="entries">${items}</ul>
 </div>`;
 }
@@ -476,11 +574,12 @@ let built = 0, empty = 0;
 
 for (const p of pages) {
   const hasBody = p.body.length > 0;
+  NOTES = '';
   if (!hasBody) empty++;
 
   let main;
   switch (p.layout) {
-    case 'home': main = homeMain(); break;
+    case 'home': main = homeMain(p); break;
     case 'tabs': main = tabsMain(p); break;
     case 'contact': main = contactMain(p); break;
     case 'books': main = booksMain(p); break;
@@ -489,7 +588,7 @@ for (const p of pages) {
       main = `<div class="shell band">
   <h1>${esc(p.title)}</h1>
   ${p.lede ? `<p class="lede">${esc(p.lede)}</p>` : ''}
-  ${hasBody ? `<div class="prose">${marked.parse(p.body)}</div>` : (DEMO ? filler(p) : pending(p))}
+  ${proseHtml(p) ? `<div class="prose">${proseHtml(p)}</div>` : (DEMO ? filler(p) : pending(p))}
 </div>`;
   }
 
@@ -499,6 +598,7 @@ for (const p of pages) {
     `<main id="main">`,
     main,
     `</main>`,
+    notesSection(),
     p.cta ? ctaBand(p) : '',
     footer(),
   ].join('\n');

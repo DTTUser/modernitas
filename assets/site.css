@@ -8,7 +8,7 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-body);
-  font-size: 17px;
+  font-size: 18px;
   line-height: 1.62;
   -webkit-font-smoothing: antialiased;
 }
@@ -371,4 +371,117 @@ p { margin: 0 0 1.1em; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+
+/* ==========================================================================
+   MAIN MENU, SCHEMATIC
+
+   Terry's decision of 8 September: the main menu becomes more prominent and
+   works as the table of contents for the course. It moves onto its own strip
+   under the wordmark, every item is a box, and The Course and Books carry
+   drop-downs holding the ten modules and the four titles.
+
+   The drop-down buttons are hidden in the markup and revealed by site.js, so
+   with scripting off this is a plain row of boxed links and nothing is out of
+   reach: both lists also sit on the pages themselves.
+   ========================================================================== */
+
+.masthead__top {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 24px; padding-block: 20px 16px;
+}
+.masthead__actions { display: flex; align-items: center; gap: 12px; }
+.masthead__strip { border-top: 1px solid var(--header-rule); background: var(--paper-sunken); }
+.masthead__strip > .shell { padding-block: 10px; }
+
+.nav { display: flex; align-items: stretch; gap: 8px; flex-wrap: wrap; }
+.nav__group { position: relative; display: flex; align-items: stretch; }
+
+.nav .nav__link {
+  display: flex; align-items: center;
+  font-family: var(--font-label); font-size: 1rem; font-weight: 600;
+  letter-spacing: 0; text-transform: none;
+  color: var(--header-ink); background: var(--paper);
+  padding: 10px 16px;
+  border: 1px solid var(--card-border); border-radius: var(--radius-lg);
+}
+.nav .nav__link:hover { color: var(--accent); border-color: var(--accent); text-decoration: none; }
+.nav .nav__link[aria-current="page"] {
+  color: var(--accent-ink); background: var(--accent); border-color: var(--accent);
+}
+
+.nav__more {
+  margin-left: -1px; width: 36px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--header-ink); background: var(--paper);
+  border: 1px solid var(--card-border); border-radius: var(--radius-lg);
+  cursor: pointer;
+}
+.nav__more:hover { color: var(--accent); border-color: var(--accent); }
+.nav__more[aria-expanded="true"] {
+  color: var(--accent-ink); background: var(--accent); border-color: var(--accent);
+}
+.nav__caret {
+  width: 0; height: 0;
+  border-left: 4.5px solid transparent; border-right: 4.5px solid transparent;
+  border-top: 5px solid currentColor;
+}
+
+.nav__panel {
+  position: absolute; top: calc(100% + 8px); left: 0; z-index: 60;
+  min-width: 340px;
+  background: var(--paper);
+  border: 1px solid var(--card-border); border-radius: var(--radius-lg);
+  box-shadow: 0 14px 30px rgba(26, 32, 40, .14);
+  padding: 16px 20px 14px;
+}
+.nav__panel__h {
+  margin: 0 0 10px;
+  font-family: var(--font-label); font-size: .72rem; font-weight: 700;
+  letter-spacing: var(--label-tracking); text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.nav__panel__list { list-style: none; margin: 0; padding: 0; }
+.nav__panel__list li { display: flex; gap: 12px; align-items: baseline; padding: 5px 0; }
+.nav__n { font-family: var(--font-label); font-size: .78rem; color: var(--ink-faint); min-width: 1.7em; }
+.nav__panel__list a { color: var(--ink); font-size: .97rem; }
+.nav__panel__list a:hover { color: var(--accent); }
+
+/* ---------------------------------------------------------- build notes */
+
+.notesbtn {
+  font-family: var(--font-label); font-size: .82rem; font-weight: 600;
+  padding: 7px 12px; cursor: pointer;
+  color: var(--ink-muted); background: transparent;
+  border: 1px dashed var(--card-border); border-radius: var(--radius-lg);
+}
+.notesbtn:hover { color: var(--accent); border-color: var(--accent); }
+
+.notes { display: none; background: #FCF8F1; border-top: 3px solid #E7B85C; padding-block: 44px; }
+body.notes-on .notes { display: block; }
+.notes__flag {
+  margin: 0 0 20px;
+  font-family: var(--font-label); font-size: .76rem; font-weight: 700;
+  letter-spacing: var(--label-tracking); text-transform: uppercase;
+  color: #8A6A20;
+}
+
+@media (max-width: 860px) {
+  .masthead__top { flex-wrap: wrap; gap: 12px; padding-block: 16px 12px; }
+  .masthead__actions { gap: 8px; }
+  .masthead__actions .btn, .notesbtn { white-space: nowrap; }
+  .notesbtn { font-size: .74rem; padding: 6px 9px; }
+
+  .masthead__strip { background: var(--paper); border-top: 0; }
+  .masthead__strip > .shell { padding-block: 0; }
+
+  /* One box per row, the drop-down opening underneath it rather than over it. */
+  .has-js .nav { display: block; }
+  .nav__group { display: flex; flex-wrap: wrap; margin-bottom: 8px; }
+  .nav .nav__link { flex: 1 1 0; min-width: 0; }
+  .nav__more { width: 52px; }
+  .nav__panel {
+    position: static; flex: 0 0 100%; min-width: 0;
+    box-shadow: none; margin: 8px 0 2px;
+  }
 }
