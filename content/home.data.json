@@ -70,5 +70,12 @@
     "High Availability IT Services",
     "High Performance IT Services",
     "Making It in IT"
-  ]
+  ],
+  "portrait": "portrait-terry-critchley.png",
+  "film": {
+    "src": "",
+    "poster": "",
+    "title": "Introduction to Modern IT",
+    "note": "The promo film goes here. In production."
+  }
 }

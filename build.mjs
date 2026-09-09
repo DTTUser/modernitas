@@ -91,6 +91,7 @@ const pages = fs.readdirSync(CONTENT)
       intent: data.intent || '',
       lede: data.lede || '',
       cta: data.cta !== false,
+      portrait: data.portrait || '',
       inNav: data.inNav !== false,
       source: f,
       body,
@@ -435,9 +436,7 @@ ${modules}
   <div class="shell">
     <div class="author">
       <div class="author__portrait">
-        <div class="imgslot" role="img" aria-label="Photograph of Dr Terry Critchley, to be supplied">
-          <span>Photograph<br>to come</span>
-        </div>
+        ${portrait(HOME.portrait, 'Dr Terry Critchley')}
       </div>
       <div class="author__text">
         <h2>${esc(HOME.authorTitle)}</h2>
@@ -487,6 +486,7 @@ function tabsMain(p) {
 <div class="shell band band--tight">
   <h1>${esc(p.title)}</h1>
   ${p.lede ? `<p class="lede">${esc(p.lede)}</p>` : ''}
+${filmSlot()}
 </div>
 <div class="shell">
   <div class="tabs" role="tablist" aria-label="${esc(p.title)}">
@@ -523,11 +523,42 @@ function contactMain(p) {
 /* ----------------------------------------------------------- books page */
 const BOOKS = readData('books.data.json') || { books: [] };
 
+/* A picture if there is one, the labelled gap if there is not. Nothing on
+   the page has to change when the real file arrives; only the data does. */
+function portrait(file, who) {
+  return file
+    ? `<img class="portrait" src="/assets/img/${esc(file)}" alt="${esc(who)}" width="320" height="320" loading="lazy">`
+    : `<div class="imgslot" role="img" aria-label="Photograph of ${esc(who)}, to be supplied"><span>Photograph<br>to come</span></div>`;
+}
+
+/* The promo film. Set film.src in home.data.json and the placeholder becomes
+   the player; nothing else needs touching. */
+function filmSlot() {
+  const f = HOME.film || {};
+  if (f.src) {
+    return `
+  <figure class="film">
+    <video controls preload="metadata"${f.poster ? ` poster="/assets/img/${esc(f.poster)}"` : ''}>
+      <source src="${esc(f.src)}" type="video/mp4">
+    </video>
+  </figure>`;
+  }
+  return `
+  <figure class="film film--pending">
+    <div class="film__box" role="img" aria-label="${esc(f.note || 'Film to come')}">
+      <span class="film__play" aria-hidden="true"></span>
+      <span class="film__note">${esc(f.note || 'Film to come')}</span>
+    </div>
+  </figure>`;
+}
+
 function booksMain(p) {
   const items = BOOKS.books.map((b) => `
       <article class="book" id="${anchorId(b.title)}">
         <div class="book__cover">
-          <div class="imgslot imgslot--cover" role="img" aria-label="Cover of ${esc(b.title)}, to be supplied"><span>Cover<br>to come</span></div>
+          ${b.cover
+            ? `<img class="cover" src="/assets/img/${esc(b.cover)}" alt="Cover of ${esc(b.title)}" width="520" height="780" loading="lazy">`
+            : `<div class="imgslot imgslot--cover" role="img" aria-label="Cover of ${esc(b.title)}, to be supplied"><span>Cover<br>to come</span></div>`}
         </div>
         <div class="book__text">
           <h2>${esc(b.title)}</h2>
@@ -601,6 +632,7 @@ for (const p of pages) {
       main = `<div class="shell band">
   <h1>${esc(p.title)}</h1>
   ${p.lede ? `<p class="lede">${esc(p.lede)}</p>` : ''}
+  ${p.portrait ? `<div class="pagePortrait">${portrait(p.portrait, p.title === 'About' ? 'Dr Terry Critchley' : p.title)}</div>` : ''}
   ${proseHtml(p) ? `<div class="prose">${proseHtml(p)}</div>` : (DEMO ? filler(p) : pending(p))}
 </div>`;
   }

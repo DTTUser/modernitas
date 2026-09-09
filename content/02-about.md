@@ -5,6 +5,7 @@ nav: About
 order: 2
 intent: Make the rest of the site credible.
 lede: Five decades in enterprise computing, and four books on it.
+portrait: portrait-terry-critchley.png
 ---
 
 > **Placeholder text.** Written so the page has something in it and the layout is real. Every word is yours to change, and none of it is a proposal.
