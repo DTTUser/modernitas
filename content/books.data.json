@@ -1,12 +1,21 @@
 {
-  "_note": "Terry sent three titles with ISBNs on 31 August 2026. Years and blurbs are deliberately blank: he supplies those. Do not guess them. Covers drop into assets/covers/ and the filename goes in 'cover'.",
+  "_note": "Four titles. Open Systems: The Reality added 4 September 2026 from Terry's own site; its ISBN is still needed. Blurbs below are Michael's drafts so the page is not empty, and are Terry's to replace. Years still blank: he supplies those. Covers drop into assets/covers/ and the filename goes in 'cover'.",
   "books": [
+    {
+      "title": "Open Systems: The Reality",
+      "isbn": "",
+      "publisher": "BCS",
+      "year": "",
+      "blurb": "Open systems as they were sold, and open systems as they turned out. Published by BCS.",
+      "cover": "",
+      "url": ""
+    },
     {
       "title": "Making It in IT",
       "isbn": "978-1498782760",
       "publisher": "CRC Press",
       "year": "",
-      "blurb": "",
+      "blurb": "What a career in IT actually looks like from the inside, and what nobody tells you at the start of one.",
       "cover": "",
       "url": ""
     },
@@ -15,7 +24,7 @@
       "isbn": "978-1498769198",
       "publisher": "CRC Press",
       "year": "",
-      "blurb": "",
+      "blurb": "Why systems slow down, how performance is designed in rather than bolted on, and what to measure.",
       "cover": "",
       "url": ""
     },
@@ -24,7 +33,7 @@
       "isbn": "978-1482255904",
       "publisher": "CRC Press",
       "year": "",
-      "blurb": "",
+      "blurb": "What it takes to keep a service running, and the difference between resilience and hoping for the best.",
       "cover": "",
       "url": ""
     }
