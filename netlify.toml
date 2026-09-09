@@ -1,12 +1,9 @@
-# modernitas.co.uk
+# Build settings for deploys from GitHub.
 #
-# Headers are NOT set here. They are written into dist/_headers by build.mjs,
-# because they have to change with the --live flag and a static file here
-# cannot. Two sources of truth for headers is how you end up serving a
-# noindex tag on a live site, or a year-long cache on a stylesheet.
-#
-# ON LAUNCH DAY: change the command below to "node build.mjs --live".
-# That single edit turns off noindex and turns on analytics.
+# Response headers are not set here on purpose: build.mjs writes dist/_headers
+# on every build, so the noindex that protects the staging site comes off in
+# the same step that makes the site live, rather than being two separate jobs
+# that can disagree with each other.
 
 [build]
   command = "node build.mjs"
