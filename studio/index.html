@@ -35,14 +35,41 @@
   <main class="shell">
     <nav class="sidebar" aria-label="Pages">
       <h2>Pages</h2>
-      <p class="pending">The page list is the next piece of work.</p>
+      <ul id="page-list" class="pages"></ul>
+      <p class="pending" id="page-list-msg">Loading…</p>
     </nav>
-    <section class="stage">
-      <div class="placeholder">
-        <h2>You are signed in.</h2>
-        <p>Editing is not wired up yet. This is the sign-in half, built and working.</p>
-        <p class="small">Nothing on this screen can change the live site.</p>
+
+    <section class="stage" id="stage">
+      <div class="placeholder" id="stage-empty">
+        <h2>Pick a page.</h2>
+        <p>Choose a page on the left and its words will appear here.</p>
       </div>
+
+      <article class="editor" id="editor" hidden>
+        <div class="editor-head">
+          <div>
+            <h2 id="ed-name">—</h2>
+            <p class="chips" id="ed-chips"></p>
+          </div>
+          <div class="editor-actions">
+            <button type="button" id="ed-save" class="primary" disabled>Save</button>
+          </div>
+        </div>
+
+        <p class="msg" id="ed-msg" role="status" aria-live="polite"></p>
+
+        <label for="ed-title">Title</label>
+        <input id="ed-title" type="text" spellcheck="true">
+        <p class="hint">The heading at the top of the page, and the name in the browser tab.</p>
+
+        <label for="ed-lede">Standfirst</label>
+        <textarea id="ed-lede" rows="2" spellcheck="true"></textarea>
+        <p class="hint">The line in larger type under the title. Leave it empty if the page does not need one.</p>
+
+        <label for="ed-body">The page</label>
+        <textarea id="ed-body" rows="24" spellcheck="true"></textarea>
+        <p class="hint">Saving is the next piece of work. Nothing you type here reaches the live site yet.</p>
+      </article>
     </section>
   </main>
 </div>
