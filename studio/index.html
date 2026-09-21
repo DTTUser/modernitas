@@ -67,8 +67,36 @@
         <p class="hint">The line in larger type under the title. Leave it empty if the page does not need one.</p>
 
         <label for="ed-body">The page</label>
-        <textarea id="ed-body" rows="24" spellcheck="true"></textarea>
-        <p class="hint">Saving is the next piece of work. Nothing you type here reaches the live site yet.</p>
+
+        <div class="toolbar" role="toolbar" aria-label="Formatting">
+          <button type="button" data-cmd="bold" title="Bold (Ctrl+B)"><b>B</b></button>
+          <button type="button" data-cmd="italic" title="Italic (Ctrl+I)"><i>I</i></button>
+          <button type="button" data-cmd="link" title="Add a link">Link</button>
+          <span class="sep"></span>
+          <button type="button" data-block="p">Normal</button>
+          <button type="button" data-block="h2">Heading</button>
+          <button type="button" data-block="h3">Subheading</button>
+          <span class="sep"></span>
+          <button type="button" data-cmd="insertUnorderedList" title="Bullet list">Bullets</button>
+          <button type="button" data-cmd="insertOrderedList" title="Numbered list">Numbers</button>
+          <button type="button" data-block="blockquote">Quote</button>
+          <span class="sep"></span>
+          <button type="button" data-cmd="removeFormat" title="Remove bold and italics">Clear</button>
+        </div>
+
+        <div class="linkbar" id="linkbar" hidden>
+          <label for="link-url">Address</label>
+          <input id="link-url" type="text" placeholder="/books/ or https://…" spellcheck="false">
+          <button type="button" id="link-apply" class="primary small">Add</button>
+          <button type="button" id="link-remove" class="ghost-dark small">Remove link</button>
+          <button type="button" id="link-cancel" class="ghost-dark small">Cancel</button>
+        </div>
+
+        <div id="ed-body" class="page-edit" contenteditable="true" spellcheck="true"
+             role="textbox" aria-multiline="true"></div>
+        <p class="hint">Pasted text comes in as plain words, so nothing from Word can
+          drag its own typefaces onto the site. Use the buttons above to format it.
+          After you press Save the site takes a minute or two to catch up.</p>
       </article>
     </section>
   </main>
@@ -78,6 +106,6 @@
   <p style="padding:2rem;font-family:system-ui">This editor needs JavaScript switched on.</p>
 </noscript>
 
-<script src="/studio/studio.js"></script>
+<script type="module" src="/studio/studio.js"></script>
 </body>
 </html>

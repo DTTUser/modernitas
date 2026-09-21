@@ -87,7 +87,12 @@ export function applyEdit(doc, { fields = {}, body } = {}) {
     if (Object.prototype.hasOwnProperty.call(fields, key)) set(doc, key, fields[key]);
   }
   if (typeof body === 'string') {
-    doc.body = body.replace(/\r\n/g, '\n').replace(/\s+$/, '') + '\n';
+    /* Keep the blank line the file already had between the front matter and
+       the first heading. Dropping it would put a one line change into every
+       page the first time Terry touched it, and make the history harder to
+       read for no reason at all. */
+    const lead = /^\n*/.exec(doc.body || '')[0] || '';
+    doc.body = lead + body.replace(/\r\n/g, '\n').replace(/^\n+/, '').replace(/\s+$/, '') + '\n';
   }
   return doc;
 }

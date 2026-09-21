@@ -84,8 +84,13 @@ t('a file with no front matter is left as it is', () => {
 t('the body always ends with exactly one newline', () => {
   for (const b of ['x', 'x\n', 'x\n\n\n', 'x   \n  \n']) {
     const out = FM.applyEdit(FM.parse(sample), { body: b });
-    assert.equal(out.body, 'x\n');
+    assert.equal(out.body, '\nx\n');   // the blank line after the front matter is kept
   }
+});
+
+t('the blank line after the front matter is not eaten on the first save', () => {
+  const once = FM.serialise(FM.applyEdit(FM.parse(sample), { body: '## Heading\n\nBody text.' }));
+  assert.equal(once, sample);
 });
 
 t('the editable list is title and lede only', () => {

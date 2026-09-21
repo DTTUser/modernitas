@@ -132,9 +132,62 @@ button:disabled{ opacity:.55; cursor:default; }
   border:1px solid var(--card); border-radius:6px; padding:10px 12px;
 }
 .editor textarea{ resize:vertical; line-height:1.55; }
-#ed-body{ font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:14px; }
 .editor input[type=text]:focus, .editor textarea:focus{
   outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent);
 }
 .hint{ margin:6px 0 0; font-size:14px; color:var(--muted); }
 .msg.bad{ color:var(--warn); }
+
+/* --------------------------------------------------------------- toolbar */
+.toolbar{
+  display:flex; align-items:center; flex-wrap:wrap; gap:4px;
+  border:1px solid var(--card); border-bottom:0;
+  border-radius:6px 6px 0 0; background:var(--sunken); padding:6px 8px;
+}
+.toolbar button{
+  border:0; background:none; font:inherit; font-size:14px; color:var(--ink);
+  padding:6px 11px; border-radius:5px; cursor:pointer; line-height:1.2;
+}
+.toolbar button:hover{ background:var(--card); }
+.toolbar button:active{ background:var(--accent); color:#fff; }
+.toolbar .sep{ width:1px; height:20px; background:var(--card); margin:0 4px; }
+
+.linkbar{
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  border:1px solid var(--card); border-bottom:0; background:var(--paper);
+  padding:10px 10px;
+}
+.linkbar label{
+  margin:0; font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted);
+}
+.linkbar input{
+  flex:1; min-width:200px; font:inherit; font-size:15px; color:var(--ink);
+  border:1px solid var(--card); border-radius:5px; padding:7px 10px;
+}
+.small{ font-size:14px; padding:7px 14px; }
+.ghost-dark{
+  border:1px solid var(--card); background:var(--paper); color:var(--muted);
+  font:inherit; border-radius:5px; padding:7px 14px; cursor:pointer;
+}
+.ghost-dark:hover{ background:var(--sunken); color:var(--ink); }
+
+/* ------------------------------------------------------------ the page */
+.page-edit{
+  border:1px solid var(--card); border-radius:0 0 6px 6px; background:var(--paper);
+  padding:20px 22px; min-height:380px; line-height:1.6; font-size:17px;
+}
+.page-edit:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+.page-edit > :first-child{ margin-top:0; }
+.page-edit > :last-child{ margin-bottom:0; }
+.page-edit h2{ font-size:22px; margin:26px 0 8px; letter-spacing:-.01em; }
+.page-edit h3{ font-size:18px; margin:22px 0 6px; }
+.page-edit p{ margin:0 0 14px; }
+.page-edit ul, .page-edit ol{ margin:0 0 14px; padding-left:24px; }
+.page-edit li{ margin:0 0 4px; }
+.page-edit a{ color:var(--accent); }
+.page-edit img{ max-width:100%; height:auto; border-radius:4px; }
+.page-edit blockquote{
+  margin:0 0 14px; padding:2px 0 2px 16px;
+  border-left:3px solid var(--accent); color:var(--muted);
+}
+.page-edit blockquote p:last-child{ margin-bottom:0; }
