@@ -9,7 +9,7 @@
     "build:live": "node build.mjs --live",
     "dev": "node build.mjs --demo && python3 -m http.server 8080 --directory dist",
     "verify": "node ../verify.mjs",
-    "test": "node test/auth.test.mjs && node test/frontmatter.test.mjs && node test/content.test.mjs && node test/save.test.mjs",
+    "test": "node test/auth.test.mjs && node test/frontmatter.test.mjs && node test/content.test.mjs && node test/save.test.mjs && node test/versions.test.mjs",
     "test:browser": "node test/markdown.browser.mjs"
   },
   "dependencies": {

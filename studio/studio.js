@@ -360,6 +360,115 @@ import { toHtml, toMarkdown } from '/studio/markdown.mjs';
       });
   });
 
+  /* ------------------------------------------------------------- versions */
+
+  var versions    = document.getElementById('versions');
+  var versionList = document.getElementById('version-list');
+  var versionMsg  = document.getElementById('version-msg');
+
+  document.getElementById('ed-history').addEventListener('click', function () {
+    if (!current) return;
+    if (!versions.hidden) { versions.hidden = true; return; }
+    versions.hidden = false;
+    versionList.textContent = '';
+    versionMsg.hidden = false;
+    versionMsg.textContent = 'Looking…';
+
+    fetch('/api/versions?path=' + encodeURIComponent(current.path), { credentials: 'same-origin' })
+      .then(function (r) {
+        if (r.status === 401) { show('gate'); return null; }
+        return r.json().then(function (d) { return { ok: r.ok, d: d }; });
+      })
+      .then(function (res) {
+        if (!res) return;
+        if (!res.ok) { versionMsg.textContent = res.d.error || 'Could not look those up.'; return; }
+        if (!res.d.versions.length) {
+          versionMsg.textContent = 'This page has not been saved since it was written.';
+          return;
+        }
+        versionMsg.hidden = true;
+        res.d.versions.forEach(function (v) {
+          var li = document.createElement('li');
+          var left = document.createElement('div');
+          var when = document.createElement('span');
+          when.className = 'when';
+          when.textContent = prettyDate(v.date);
+          var what = document.createElement('span');
+          what.className = 'what';
+          what.textContent = v.message;
+          left.appendChild(when); left.appendChild(what);
+          li.appendChild(left);
+
+          if (v.sha === res.d.current) {
+            var live = document.createElement('span');
+            live.className = 'live';
+            live.textContent = 'live now';
+            li.appendChild(live);
+          } else {
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'ghost-dark small';
+            b.textContent = 'Put this back';
+            b.addEventListener('click', function () { restore(v, b); });
+            li.appendChild(b);
+          }
+          versionList.appendChild(li);
+        });
+      })
+      .catch(function () { versionMsg.textContent = 'Could not reach the site. Try again in a moment.'; });
+  });
+
+  document.getElementById('version-close').addEventListener('click', function () {
+    versions.hidden = true;
+  });
+
+  function prettyDate(iso) {
+    var d = new Date(iso);
+    if (isNaN(d)) return iso || '';
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+         + ', ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function restore(v, button) {
+    if (dirty && !window.confirm(
+      'You have changes on this page that are not saved. Putting an earlier version back will lose them. Carry on?')) return;
+
+    button.disabled = true;
+    button.textContent = 'Putting it back…';
+
+    fetch('/api/versions', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ path: current.path, sha: v.sha })
+    })
+      .then(function (r) {
+        if (r.status === 401) { show('gate'); return null; }
+        return r.json().then(function (d) { return { ok: r.ok, d: d }; });
+      })
+      .then(function (res) {
+        if (!res) return;
+        if (!res.ok) {
+          edSay(res.d.error || 'That version could not be put back.', 'bad');
+          button.disabled = false; button.textContent = 'Put this back';
+          return;
+        }
+        versions.hidden = true;
+        dirty = false;
+        /* Reload rather than patch the screen: what is on the page now came
+           from the repository, so it should be read back from there. */
+        var b = list.querySelector('.page-btn[data-path="' + current.path + '"]');
+        openPage(current.path, b);
+        edSay(res.d.unchanged
+          ? 'That version is the one already live.'
+          : 'Put back. The site updates itself in a minute or two.', 'ok');
+      })
+      .catch(function () {
+        edSay('Could not reach the site. Nothing was changed.', 'bad');
+        button.disabled = false; button.textContent = 'Put this back';
+      });
+  }
+
   /* If the title changed, the list on the left is now telling him something
      that is not true. */
   function refreshNavName(path, title) {

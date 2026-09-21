@@ -52,11 +52,21 @@
             <p class="chips" id="ed-chips"></p>
           </div>
           <div class="editor-actions">
+            <button type="button" id="ed-history" class="ghost-dark">Earlier versions</button>
             <button type="button" id="ed-save" class="primary" disabled>Save</button>
           </div>
         </div>
 
         <p class="msg" id="ed-msg" role="status" aria-live="polite"></p>
+
+        <div class="versions" id="versions" hidden>
+          <h3>Earlier versions of this page</h3>
+          <p class="hint">Putting one back is itself a save, so nothing is lost and you
+            can always come forward again.</p>
+          <ul id="version-list"></ul>
+          <p class="pending" id="version-msg"></p>
+          <button type="button" id="version-close" class="ghost-dark small">Close</button>
+        </div>
 
         <label for="ed-title">Title</label>
         <input id="ed-title" type="text" spellcheck="true">
