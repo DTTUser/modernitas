@@ -3,3 +3,5 @@ dist/
 _localfonts.css
 shot-*.png
 .netlify/
+
+Claude outputs/

@@ -614,6 +614,14 @@ fs.rmSync(DIST, { recursive: true, force: true });
 fs.mkdirSync(DIST, { recursive: true });
 copyDir(path.join(ROOT, 'assets'), path.join(DIST, 'assets'));
 
+/* The studio is a tool, not a page. It is copied in whole and never touched by
+   the content pipeline, so nothing Terry writes can break it and nothing here
+   can wander into the navigation or the sitemap. It carries its own noindex,
+   on a live build as well as a staging one. */
+if (fs.existsSync(path.join(ROOT, 'studio'))) {
+  copyDir(path.join(ROOT, 'studio'), path.join(DIST, 'studio'));
+}
+
 let built = 0, empty = 0;
 
 for (const p of pages) {
@@ -703,6 +711,14 @@ fs.writeFileSync(path.join(DIST, '_headers'), `/*
   X-Frame-Options: SAMEORIGIN
   Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
 ${NOINDEX ? '  X-Robots-Tag: noindex, nofollow, noarchive\n' : ''}
+/studio/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+  Cache-Control: no-store
+
+/api/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+  Cache-Control: no-store
+
 /assets/fonts/*
   Cache-Control: public, max-age=31536000, immutable
 

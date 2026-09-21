@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Edit the site — modernitas</title>
+<link rel="icon" href="/assets/favicon.svg">
+<link rel="stylesheet" href="/studio/studio.css">
+</head>
+<body>
+
+<!-- Sign in ------------------------------------------------------------- -->
+<main id="signin" class="gate" hidden>
+  <form id="signin-form" class="card">
+    <h1>Edit the site</h1>
+    <p class="sub">modernitas.co.uk</p>
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" autocomplete="current-password"
+           required autofocus spellcheck="false">
+    <button type="submit" id="signin-btn">Sign in</button>
+    <p class="msg" id="signin-msg" role="status" aria-live="polite"></p>
+  </form>
+  <p class="foot">If you have forgotten the password, email Michael and he will set a new one.</p>
+</main>
+
+<!-- The studio ---------------------------------------------------------- -->
+<div id="studio" hidden>
+  <header class="bar">
+    <span class="mark">modernitas</span>
+    <span class="bar-title">Edit the site</span>
+    <button type="button" id="signout" class="ghost">Sign out</button>
+  </header>
+
+  <main class="shell">
+    <nav class="sidebar" aria-label="Pages">
+      <h2>Pages</h2>
+      <p class="pending">The page list is the next piece of work.</p>
+    </nav>
+    <section class="stage">
+      <div class="placeholder">
+        <h2>You are signed in.</h2>
+        <p>Editing is not wired up yet. This is the sign-in half, built and working.</p>
+        <p class="small">Nothing on this screen can change the live site.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<noscript>
+  <p style="padding:2rem;font-family:system-ui">This editor needs JavaScript switched on.</p>
+</noscript>
+
+<script src="/studio/studio.js"></script>
+</body>
+</html>

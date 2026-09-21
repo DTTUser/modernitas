@@ -1,0 +1,90 @@
+/* Studio: the editor's own skin. Deliberately close to the site (skin B) so it
+   feels like part of modernitas, but it is a tool, not a page, so it does not
+   share site.css and cannot be broken by a change there. */
+
+:root{
+  --paper:#FFFFFF; --sunken:#F5F7F9; --ink:#1A2028; --muted:#55606C;
+  --rule:#E6EBEF; --card:#E1E7EC; --accent:#2F5D7C; --accent-hover:#1F4257;
+  --warn:#9A3412;
+  --font:'Public Sans', system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+}
+
+@font-face{
+  font-family:'Public Sans'; font-style:normal; font-weight:400; font-display:swap;
+  src:url('/assets/fonts/public-sans-latin-400-normal.woff2') format('woff2');
+}
+@font-face{
+  font-family:'Public Sans'; font-style:normal; font-weight:600; font-display:swap;
+  src:url('/assets/fonts/public-sans-latin-600-normal.woff2') format('woff2');
+}
+@font-face{
+  font-family:'Public Sans'; font-style:normal; font-weight:700; font-display:swap;
+  src:url('/assets/fonts/public-sans-latin-700-normal.woff2') format('woff2');
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; font-family:var(--font); color:var(--ink); background:var(--sunken);
+  font-size:17px; line-height:1.5;
+}
+[hidden]{display:none !important}
+
+/* --- sign in --- */
+.gate{
+  min-height:100%; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:18px; padding:24px;
+}
+.card{
+  background:var(--paper); border:1px solid var(--card); border-radius:6px;
+  padding:34px 34px 30px; width:100%; max-width:400px;
+  box-shadow:0 1px 2px rgba(26,32,40,.05);
+}
+.card h1{ font-size:24px; margin:0 0 2px; font-weight:700; letter-spacing:-.01em; }
+.card .sub{ margin:0 0 24px; color:var(--muted); font-size:15px; }
+label{ display:block; font-weight:600; font-size:15px; margin-bottom:6px; }
+input[type=password]{
+  width:100%; font-family:inherit; font-size:17px; padding:11px 12px;
+  border:1px solid var(--card); border-radius:4px; background:var(--paper);
+  color:var(--ink);
+}
+input[type=password]:focus{ outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent); }
+button{
+  font-family:inherit; font-size:16px; font-weight:600; cursor:pointer;
+  border-radius:4px; border:1px solid transparent; padding:11px 20px;
+  background:var(--accent); color:#fff; transition:background .15s;
+}
+button:hover:not(:disabled){ background:var(--accent-hover); }
+button:disabled{ opacity:.55; cursor:default; }
+#signin-btn{ width:100%; margin-top:18px; }
+.msg{ margin:14px 0 0; font-size:15px; min-height:1.4em; color:var(--warn); }
+.msg.ok{ color:var(--muted); }
+.foot{ color:var(--muted); font-size:14px; margin:0; text-align:center; max-width:400px; }
+
+/* --- studio --- */
+.bar{
+  display:flex; align-items:center; gap:16px; padding:0 18px; height:56px;
+  background:var(--accent); color:#fff;
+}
+.mark{ font-weight:700; letter-spacing:-.01em; }
+.bar-title{ font-size:15px; opacity:.85; }
+.ghost{
+  margin-left:auto; background:transparent; border:1px solid rgba(255,255,255,.5);
+  color:#fff; font-size:15px; padding:7px 16px;
+}
+.ghost:hover:not(:disabled){ background:rgba(255,255,255,.12); }
+.shell{ display:flex; align-items:stretch; min-height:calc(100% - 56px); }
+.sidebar{
+  width:260px; flex-shrink:0; background:var(--paper);
+  border-right:1px solid var(--rule); padding:22px 18px;
+}
+.sidebar h2{ font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin:0 0 12px; }
+.pending{ color:var(--muted); font-size:15px; }
+.stage{ flex:1; padding:34px; }
+.placeholder{
+  background:var(--paper); border:1px solid var(--card); border-radius:6px;
+  padding:28px 30px; max-width:620px;
+}
+.placeholder h2{ margin:0 0 10px; font-size:20px; }
+.placeholder p{ margin:0 0 8px; }
+.small{ color:var(--muted); font-size:15px; }
