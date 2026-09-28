@@ -30,6 +30,13 @@ const SITE = 'https://modernitas.co.uk';
 const ARGS = new Set(process.argv.slice(2));
 const LIVE = ARGS.has('--live');
 const DEMO = ARGS.has('--demo');
+/* The practice copy Terry signs the editor off on. Same site, a red strip on
+   every page saying nothing here touches the real one. Switched on by the
+   PRACTICE=1 environment variable on the branch deploy, never on --live. */
+const PRACTICE = !LIVE && (ARGS.has('--practice') || process.env.PRACTICE === '1');
+const PRACTICE_BAR = PRACTICE
+  ? '<div role="note" style="background:#FDECEA;color:#B42318;border-bottom:2px solid #B42318;font:600 16px/1.4 system-ui,sans-serif;padding:10px 16px;text-align:center">Practice copy. Change anything you like: nothing you do here touches the real site.</div>'
+  : '';
 const NOINDEX = !LIVE;
 
 /* Plausible: cookie-free analytics. Only emitted on a live build, so the
@@ -169,7 +176,7 @@ function head(p) {
 <link rel="stylesheet" href="/assets/site.css">${structuredData(p)}${analytics()}
 </head>
 <body>
-<a class="skip" href="#main">Skip to content</a>`;
+${PRACTICE_BAR}<a class="skip" href="#main">Skip to content</a>`;
 }
 
 /* One anchor per module and per book, so the menu can point at the item
@@ -620,6 +627,10 @@ copyDir(path.join(ROOT, 'assets'), path.join(DIST, 'assets'));
    on a live build as well as a staging one. */
 if (fs.existsSync(path.join(ROOT, 'studio'))) {
   copyDir(path.join(ROOT, 'studio'), path.join(DIST, 'studio'));
+  if (PRACTICE) {
+    const f = path.join(DIST, 'studio', 'index.html');
+    fs.writeFileSync(f, fs.readFileSync(f, 'utf8').replace('<body>', '<body>\n' + PRACTICE_BAR));
+  }
 }
 
 let built = 0, empty = 0;
