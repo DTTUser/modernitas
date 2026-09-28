@@ -37,6 +37,12 @@ const PRACTICE = !LIVE && (ARGS.has('--practice') || process.env.PRACTICE === '1
 const PRACTICE_BAR = PRACTICE
   ? '<div role="note" style="background:#FDECEA;color:#B42318;border-bottom:2px solid #B42318;font:600 16px/1.4 system-ui,sans-serif;padding:10px 16px;text-align:center">Practice copy. Change anything you like: nothing you do here touches the real site.</div>'
   : '';
+/* On the practice pages only, the strip also carries the way in to the editor,
+   so Terry does not need to be sent a second address. The real site never
+   links to it. */
+const PRACTICE_PAGE_BAR = PRACTICE
+  ? PRACTICE_BAR.replace('</div>', ' <a href="/studio/" style="color:#B42318;text-decoration:underline;margin-left:8px">Edit this site</a></div>')
+  : '';
 const NOINDEX = !LIVE;
 
 /* Plausible: cookie-free analytics. Only emitted on a live build, so the
@@ -176,7 +182,7 @@ function head(p) {
 <link rel="stylesheet" href="/assets/site.css">${structuredData(p)}${analytics()}
 </head>
 <body>
-${PRACTICE_BAR}<a class="skip" href="#main">Skip to content</a>`;
+${PRACTICE_PAGE_BAR}<a class="skip" href="#main">Skip to content</a>`;
 }
 
 /* One anchor per module and per book, so the menu can point at the item
