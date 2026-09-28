@@ -1,5 +1,5 @@
 ---
-title: About
+title: About Us
 slug: about
 nav: About
 order: 2
