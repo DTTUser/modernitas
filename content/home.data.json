@@ -69,8 +69,8 @@
   ],
   "portrait": "portrait-terry-critchley.png",
   "film": {
-    "src": "",
-    "poster": "",
+    "src": "/assets/film/imit-promo-v5.mp4",
+    "poster": "film-poster-v5.jpg",
     "title": "Introduction to Modern IT",
     "note": "The promo film goes here. In production."
   }
