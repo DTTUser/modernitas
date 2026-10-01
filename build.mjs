@@ -180,7 +180,7 @@ function anchorId(title) {
 }
 
 function moduleId(i) {
-  return 'm' + String(i + 1).padStart(2, '0');
+  return 'm' + String(i).padStart(2, '0');
 }
 
 function masthead(current) {
@@ -191,7 +191,7 @@ function masthead(current) {
      the drop-down buttons never appear and it stays a plain row of links, so
      nothing is lost: the same lists are on the home and course pages. */
   const MENUS = {
-    'the-course': ['Ten modules',
+    'the-course': ['Nine modules',
       HOME.modules.map(([t], i) => [t, '/the-course/#' + moduleId(i)])],
     'books': ['Four books',
       BOOKS.books.map((b) => [b.title, '/books/#' + anchorId(b.title)])],
@@ -204,7 +204,7 @@ function masthead(current) {
     if (!menu) return `        <div class="nav__group">${link}</div>`;
     const [heading, items] = menu;
     const list = items.map(([t, to], i) =>
-      `              <li><span class="nav__n">${String(i + 1).padStart(2, '0')}</span><a href="${to}">${esc(t)}</a></li>`
+      `              <li><span class="nav__n">${String(i).padStart(2, '0')}</span><a href="${to}">${esc(t)}</a></li>`
     ).join('\n');
     return `        <div class="nav__group">
           ${link}
@@ -388,7 +388,7 @@ function homeMain(p) {
   const audience = HOME.audience.map(([h, d]) =>
     `      <div class="card"><h3>${esc(h)}</h3><p>${esc(d)}</p></div>`).join('\n');
   const modules = HOME.modules.map(([t, d], i) =>
-    `      <div class="item"><div class="item__n">${String(i + 1).padStart(2, '0')}</div>` +
+    `      <div class="item"><div class="item__n">${String(i).padStart(2, '0')}</div>` +
     `<div><div class="item__t">${esc(t)}</div><div class="item__d">${esc(d)}</div></div></div>`).join('\n');
   const books = HOME.books.map((b) => `      <li>${esc(b)}</li>`).join('\n');
 
@@ -460,7 +460,7 @@ function tabsMain(p) {
     `      <button class="tab" role="tab" id="tab-${i}" aria-controls="panel-${i}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}">${esc(t)}</button>`
   ).join('\n');
   const modules = HOME.modules.map(([t, d], i) =>
-    `        <div class="item" id="${moduleId(i)}"><div class="item__n">${String(i + 1).padStart(2, '0')}</div>` +
+    `        <div class="item" id="${moduleId(i)}"><div class="item__n">${String(i).padStart(2, '0')}</div>` +
     `<div><div class="item__t">${esc(t)}</div><div class="item__d">${esc(d)}</div></div></div>`).join('\n');
   const audience = HOME.audience.map(([h, d]) =>
     `        <div class="card"><h3>${esc(h)}</h3><p>${esc(d)}</p></div>`).join('\n');

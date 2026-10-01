@@ -6,7 +6,7 @@ order: 1
 layout: home
 inNav: false
 intent: Make a visitor want to go one page deeper.
-lede: A ten-module course on the whole IT landscape, written by someone who has spent five decades in it.
+lede: A nine-module course on the whole IT landscape, written by someone who has spent five decades in it.
 ---
 
 > **Placeholder text.** Written so the page has something in it and the layout is real. Every word is yours to change, and none of it is a proposal.
