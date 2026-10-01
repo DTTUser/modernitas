@@ -577,32 +577,50 @@ function booksMain(p) {
 </div>`;
 }
 
-/* -------------------------------------------------------- articles page */
-const ARTICLES = readData('articles.data.json') || { articles: [] };
+/* -------------------------------------------------------- articles page
+   One markdown file per article in content/articles/, in Terry's own words.
+   Front matter gives the title and order. Everything above the marker
+   <!-- full article --> is the short introduction shown on the page, links
+   included; anything below it is the full piece, behind a "Read the full
+   article" switch. It is still in the page, so Google indexes it. An article
+   with no full piece is one that lives on somebody else's site. */
+const ARTICLES_DIR = path.join(CONTENT, 'articles');
+const FULL_MARK = /<!--\s*full article\s*-->/i;
+const ARTICLES = fs.existsSync(ARTICLES_DIR)
+  ? fs.readdirSync(ARTICLES_DIR).filter((f) => f.endsWith('.md')).map((f) => {
+      const { data, body } = parse(fs.readFileSync(path.join(ARTICLES_DIR, f), 'utf8'));
+      const [intro, full = ''] = body.split(FULL_MARK);
+      return { title: data.title || f, order: data.order ?? 99, intro: intro.trim(), full: full.trim() };
+    }).sort((a, b) => a.order - b.order)
+  : [];
+
+/* Links out open in a new tab, so the reader keeps their place here. */
+const outLinks = (html) => html.replace(/<a href="(https?:[^"]+)"/g,
+  '<a href="$1" target="_blank" rel="noopener"');
 
 function articlesMain(p) {
-  if (!ARTICLES.articles.length) {
+  if (!ARTICLES.length) {
     return `<div class="shell band"><h1>${esc(p.title)}</h1>${p.lede ? `<p class="lede">${esc(p.lede)}</p>` : ''}${pending(p)}</div>`;
   }
-  const items = ARTICLES.articles.map((a) => {
-    const kind = a.kind === 'link' ? 'Published elsewhere'
-      : a.kind === 'download' ? 'PDF download' : 'Article';
-    const target = a.kind === 'link' ? ' rel="noopener"' : '';
-    const href = a.href || '#';
-    return `
-      <li class="entry">
-        <p class="entry__kind">${esc(kind)}</p>
-        <h2 class="entry__title"><a href="${esc(href)}"${target}>${esc(a.title)}</a></h2>
-        <p class="entry__blurb">${esc(a.blurb || '')}</p>
-        ${a.source ? `<p class="entry__source">${esc(a.source)}</p>` : ''}
-      </li>`;
-  }).join('\n');
+  const contents = ARTICLES.map((a) =>
+    `<li><a href="#${anchorId(a.title)}">${esc(a.title)}</a></li>`).join('');
+  const items = ARTICLES.map((a) => `
+      <li class="entry" id="${anchorId(a.title)}">
+        <p class="entry__kind">${a.full ? 'Article' : 'Published elsewhere'}</p>
+        <h2 class="entry__title">${esc(a.title)}</h2>
+        <div class="prose entry__intro">${outLinks(marked.parse(a.intro))}</div>
+        ${a.full ? `<details class="entry__more">
+          <summary>Read the full article</summary>
+          <div class="prose entry__full">${outLinks(marked.parse(a.full))}</div>
+        </details>` : ''}
+      </li>`).join('\n');
 
   return `
 <div class="shell band">
   <h1>${esc(p.title)}</h1>
   ${p.lede ? `<p class="lede">${esc(p.lede)}</p>` : ''}
   ${proseHtml(p) ? `<div class="prose">${proseHtml(p)}</div>` : ''}
+  <nav class="entries__contents" aria-label="Articles on this page"><ul>${contents}</ul></nav>
   <ul class="entries">${items}</ul>
 </div>`;
 }
