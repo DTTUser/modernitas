@@ -131,7 +131,7 @@ function structuredData(p) {
         '@type': 'Course',
         name: 'Introduction to Modern IT',
         description:
-          'A ten-module course on the whole IT landscape, for people entering IT, changing career into it, or teaching it.',
+          'A nine-module course on the whole IT landscape, for people entering IT, changing career into it, or teaching it.',
         provider: { '@id': `${SITE}/#terry` },
         author: { '@id': `${SITE}/#terry` },
         inLanguage: 'en-GB',
