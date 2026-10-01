@@ -425,6 +425,13 @@ function homeMain(p) {
     </div>
   </div>
 </section>
+${HOME.film && HOME.film.src ? `
+<section class="band">
+  <div class="shell">
+    <h2>The course in four minutes</h2>
+${filmSlot()}
+  </div>
+</section>` : ''}
 
 <section class="band band--raised">
   <div class="shell">
