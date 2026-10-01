@@ -18,48 +18,44 @@
       "Teaching the subject, or hiring into it, and wanting one coherent account of the field rather than ten disconnected ones."
     ]
   ],
-  "modulesTitle": "Ten modules, one picture",
+  "modulesTitle": "Nine modules, one picture",
   "modulesLede": "Each module stands on its own. Taken together they build the map of modern computing that most people are expected to already have.",
   "modules": [
     [
-      "Enterprise computing",
-      "Mainframes and high performance computing"
+      "Preamble on learning",
+      "How to get the most from the course"
     ],
     [
-      "Data centres",
-      "Where the computing actually happens"
+      "Computing basics",
+      "What computers are good at, and what they are not"
     ],
     [
-      "Cloud",
-      "What it is, and what it costs you"
+      "IT components",
+      "The parts, and how they fit together"
     ],
     [
-      "Databases",
-      "How organisations hold what they know"
+      "IT methodologies",
+      "How IT work is planned and delivered"
     ],
     [
-      "Cybersecurity",
-      "The threats, and the honest defences"
+      "Operational IT",
+      "Keeping systems running, day in, day out"
     ],
     [
-      "Edge computing and IoT",
-      "Computing that left the building"
+      "IT specialisms",
+      "Eleven specialisms, from the cloud to the mainframe"
     ],
     [
-      "Artificial intelligence",
-      "What it can do, and what it is sold as"
+      "IT critical success factors",
+      "Why IT projects succeed, and why so many fail"
     ],
     [
-      "Computer graphics",
-      "From rendering to visualisation"
+      "Resilience",
+      "Staying up, and recovering when you do not"
     ],
     [
-      "Digital transformation",
-      "The word, and what is under it"
-    ],
-    [
-      "Legacy: an obituary",
-      "What we left behind, and why it matters"
+      "Standards and frameworks",
+      "The rules the industry works to"
     ]
   ],
   "authorTitle": "Dr Terry Critchley",

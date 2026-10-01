@@ -5,12 +5,12 @@ nav: The Course
 order: 3
 layout: tabs
 intent: Get a visitor to register their interest.
-lede: Ten modules covering the whole landscape, from the mainframe to the model. Written to be understood by people who do not write code and do not intend to.
+lede: Nine modules covering the whole landscape, from the mainframe to the model. Written to be understood by people who do not write code and do not intend to.
 ---
 
 > **Placeholder text.** Written so the page has something in it and the layout is real. Every word is yours to change, and none of it is a proposal.
 
-Introduction to Modern IT is a course about the IT world rather than a course about writing code. Ten modules, each one standing on its own, which together build the picture of modern computing that most people are assumed to have and were never actually given.
+Introduction to Modern IT is a course about the IT world rather than a course about writing code. Nine modules, each one standing on its own, which together build the picture of modern computing that most people are assumed to have and were never actually given.
 
 It is not a tour of one technology. It covers the mainframe and the model, the data centre and the edge, and it spends as much time on what things cost and where they fail as on what they do.
 
