@@ -58,6 +58,6 @@ at ico.org.uk if you are not satisfied with the response.
 
 ## Who is responsible
 
-[TERRY: your name and the contact email address for privacy requests go here.
-It can be the same address as the contact form. This paragraph is the one
-legally required to name you, so it cannot stay as a placeholder.]
+This site is run by Dr Terry Critchley, who is responsible for the
+information it collects. For anything to do with your data, email
+itmit@modernitas.co.uk.
